@@ -1,0 +1,65 @@
+from datetime import datetime
+
+
+def process(json_object: dict):
+    global time
+    time = datetime.now().strftime('%Y%m%d-%H%M%S')
+
+    lst = json_object['Entries']
+    entries = len(lst)
+    count = 0
+
+    for entry in lst:
+        count += 1
+        write_data_to_file(f"Entry: {entry['EntryId']}")
+        write_data_to_file('_'*24)
+        write_data_to_file(
+            f"Name: {entry['Field1']} {entry['Field2']} {entry['Field3']}")
+        write_data_to_file(f"Title: {entry['Field4']}")
+        write_data_to_file(f"Organization: {entry['Field5']}")
+        write_data_to_file(f"Email: {entry['Field6']}")
+        if entry['Field7'] != '':
+            write_data_to_file(f"Website: {entry['Field7']}")
+        if entry['Field9'] != '':
+            phone_number: str = entry['Field9'][:3] + '-' + \
+                entry['Field9'][3:6] + '-' + entry['Field9'][6:]
+            write_data_to_file(f"Phone: {phone_number}")
+
+        write_data_to_file('\nOpportunities Interested in:')
+        if entry['Field11'] != '':
+            write_data_to_file(f"{entry['Field11']}")
+        if entry['Field12'] != '':
+            write_data_to_file(f"{entry['Field12']}")
+        if entry['Field13'] != '':
+            write_data_to_file(f"{entry['Field13']}")
+        if entry['Field14'] != '':
+            write_data_to_file(f"{entry['Field14']}")
+        if entry['Field15'] != '':
+            write_data_to_file(f"{entry['Field15']}")
+        if entry['Field16'] != '':
+            write_data_to_file(f"{entry['Field16']}")
+        if entry['Field17'] != '':
+            write_data_to_file(f"{entry['Field17']}")
+
+        write_data_to_file('\nTime Period:')
+        if entry['Field111'] != '':
+            write_data_to_file(f"{entry['Field111']}")
+        if entry['Field112'] != '':
+            write_data_to_file(f"{entry['Field112']}")
+        if entry['Field113'] != '':
+            write_data_to_file(f"{entry['Field113']}")
+        if entry['Field114'] != '':
+            write_data_to_file(f"{entry['Field114']}")
+        if entry['Field115'] != '':
+            write_data_to_file(f"{entry['Field115']}")
+
+        write_data_to_file(f"\nName Permission: {entry['Field211']}")
+
+        if entries != count:
+            write_data_to_file('\n\n')
+
+
+def write_data_to_file(str):
+    file_name = f"form_entries_{time}.txt"
+    with open(file_name, 'a') as fileIO:
+        fileIO.write(str + '\n')

@@ -2,3 +2,4 @@ secret.py
 .vscode
 __pycache__
 .venv
+form_entries*.txt
