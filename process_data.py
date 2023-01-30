@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-def process(json_object: dict):
+def process(json_object: dict):  # noqa: C901
     global time
     time = datetime.now().strftime('%Y%m%d-%H%M%S')
 
@@ -26,32 +26,20 @@ def process(json_object: dict):
             write_data_to_file(f"Phone: {phone_number}")
 
         write_data_to_file('\nOpportunities Interested in:')
-        if entry['Field11'] != '':
-            write_data_to_file(f"{entry['Field11']}")
-        if entry['Field12'] != '':
-            write_data_to_file(f"{entry['Field12']}")
-        if entry['Field13'] != '':
-            write_data_to_file(f"{entry['Field13']}")
-        if entry['Field14'] != '':
-            write_data_to_file(f"{entry['Field14']}")
-        if entry['Field15'] != '':
-            write_data_to_file(f"{entry['Field15']}")
-        if entry['Field16'] != '':
-            write_data_to_file(f"{entry['Field16']}")
-        if entry['Field17'] != '':
-            write_data_to_file(f"{entry['Field17']}")
+        write_data_to_file(f"{entry['Field11']}")
+        write_data_to_file(f"{entry['Field12']}")
+        write_data_to_file(f"{entry['Field13']}")
+        write_data_to_file(f"{entry['Field14']}")
+        write_data_to_file(f"{entry['Field15']}")
+        write_data_to_file(f"{entry['Field16']}")
+        write_data_to_file(f"{entry['Field17']}")
 
         write_data_to_file('\nTime Period:')
-        if entry['Field111'] != '':
-            write_data_to_file(f"{entry['Field111']}")
-        if entry['Field112'] != '':
-            write_data_to_file(f"{entry['Field112']}")
-        if entry['Field113'] != '':
-            write_data_to_file(f"{entry['Field113']}")
-        if entry['Field114'] != '':
-            write_data_to_file(f"{entry['Field114']}")
-        if entry['Field115'] != '':
-            write_data_to_file(f"{entry['Field115']}")
+        write_data_to_file(f"{entry['Field111']}")
+        write_data_to_file(f"{entry['Field112']}")
+        write_data_to_file(f"{entry['Field113']}")
+        write_data_to_file(f"{entry['Field114']}")
+        write_data_to_file(f"{entry['Field115']}")
 
         write_data_to_file(f"\nName Permission: {entry['Field211']}")
 
@@ -60,6 +48,8 @@ def process(json_object: dict):
 
 
 def write_data_to_file(str):
+    if str == '':
+        return
     file_name = f"form_entries_{time}.txt"
     with open(file_name, 'a') as fileIO:
         fileIO.write(str + '\n')
