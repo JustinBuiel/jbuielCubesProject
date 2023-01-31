@@ -1,0 +1,37 @@
+Entry: 1
+________________________
+Name:  Justin Buiel
+Title: Automate this form
+Organization: BSU
+Email: justinbuiel10@gmail.com
+
+Opportunities Interested in:
+Course Project
+
+Time Period:
+Spring 2023 (January 2023- April 2023)  
+
+Name Permission: No
+
+
+
+Entry: 2
+________________________
+Name: Dr. Foo Bar
+Title: Lorem Ipsum
+Organization: org
+Email: fbar@org.com
+Website: org.com
+Phone: 888-123-4567
+
+Opportunities Interested in:
+Job Shadow
+Internships
+Career Panel
+Networking Event
+
+Time Period:
+Spring 2023 (January 2023- April 2023)  
+Summer 2023 (June 2023- August 2023)
+
+Name Permission: Yes

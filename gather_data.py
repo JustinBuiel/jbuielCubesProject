@@ -1,12 +1,10 @@
 import requests
+from secret import wufoo_key
 import sys
-import os
 from requests.auth import HTTPBasicAuth
 
 
 def get_json_data() -> dict:
-    wufoo_key = os.environ['API_KEY']
-    print(wufoo_key)
     url = "https://justinb.wufoo.com/api/v3/forms/cubes-project-proposal-submission/entries/json"
     response = requests.get(url, auth=HTTPBasicAuth(wufoo_key, 'pass'))
 
