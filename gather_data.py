@@ -5,7 +5,7 @@ from requests.auth import HTTPBasicAuth
 
 
 def get_json_data() -> dict:
-    wufoo_key = os.environ['REPO_SECRET']
+    wufoo_key = os.environ['WUFOO_KEY']
     url = "https://justinb.wufoo.com/api/v3/forms/cubes-project-proposal-submission/entries/json"
     response = requests.get(url, auth=HTTPBasicAuth(wufoo_key, 'pass'))
 
