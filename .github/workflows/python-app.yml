@@ -35,9 +35,8 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
     - name: Test env vars for python
-      run: python -c 'import os;print(os.environ)'
-      env:
-        REPO_SECRET: ${{ secrets.WUFOO_KEY}} 
+      run: | 
+        REPO_SECERT=${{ secrets.WUFOO_KEY }} python3 jbuielCubesProject/gather_data.py
     - name: Test with pytest
       run: |
         # pytest
