@@ -12,12 +12,13 @@ def set_up_database():
         db_cursor = db_connection.cursor()
         print('Successfully connected to database')
         # create the table
-        make_entry_table(db_cursor, db_connection, "entries")
+        table_name = "entries"
+        make_entry_table(db_cursor, db_connection, table_name)
         print('Successfully created all tables')
     except sqlite3.Error as db_error:
         print(f'A database error has occurred: {db_error}')
     finally:
-        return db_connection, db_cursor
+        return db_connection, db_cursor, table_name
 
 
 def make_entry_table(db_cursor: sqlite3.Cursor, db_connection: sqlite3.Connection, table_name: str):
@@ -29,6 +30,8 @@ def make_entry_table(db_cursor: sqlite3.Cursor, db_connection: sqlite3.Connectio
                              lastName TEXT,
                              title TEXT,
                              orgName TEXT,
+                             email TEXT,
+                             orgWebsite TEXT,
                              phoneNumber TEXT,
                              courseProject TEXT,
                              guestSpeaker TEXT,
@@ -49,19 +52,22 @@ def make_entry_table(db_cursor: sqlite3.Cursor, db_connection: sqlite3.Connectio
         print(f'A database table creation error has occurred: {create_error}')
 
 
-def insert_data(entry_tuple: tuple, db_cursor: sqlite3.Cursor, table_name: str):
-    prefix, firstName, lastName, title, orgName, phoneNumber, courseProject, guestSpeaker, siteVisit, jobShadow, internships, \
-        careerPanel, networkingEvent, summer2022, fall2022, spring2023, summer2023, otherTime, namePermission = entry_tuple
+def insert_data(entry_lst: list, db_cursor: sqlite3.Cursor, table_name: str):
+    prefix, firstName, lastName, title, orgName, email, orgWebsite, phoneNumber, courseProject, guestSpeaker, siteVisit, \
+        jobShadow, internships, careerPanel, networkingEvent, summer2022, fall2022, spring2023, summer2023, otherTime, \
+        namePermission = entry_lst
     try:
-        db_cursor.execute(f'''INSERT INTO {table_name} (prefix, firstName, lastName, title, orgName, phoneNumber, \
-                            courseProject, guestSpeaker, siteVisit, jobShadow, internships, careerPanel, networkingEvent, \
-                            summer2022, fall2022, spring2023, summer2023, otherTime, namePermission) \
-                            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        db_cursor.execute(f'''INSERT INTO {table_name} (prefix, firstName, lastName, title, orgName, phoneNumber, email, \
+            orgWebsite, courseProject, guestSpeaker, siteVisit, jobShadow, internships, careerPanel, networkingEvent, \
+                summer2022, fall2022, spring2023, summer2023, otherTime, namePermission) \
+                    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                           (prefix,
                            firstName,
                            lastName,
                            title,
                            orgName,
+                           email,
+                           orgWebsite,
                            phoneNumber,
                            courseProject,
                            guestSpeaker,
@@ -77,6 +83,7 @@ def insert_data(entry_tuple: tuple, db_cursor: sqlite3.Cursor, table_name: str):
                            otherTime,
                            namePermission))
 
+        print('All data succesfully inserted into table.')
     except sqlite3.Error as insert_error:
         print(f'A database insert error has occurred: {insert_error}')
 

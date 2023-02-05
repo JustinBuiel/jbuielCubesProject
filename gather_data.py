@@ -14,4 +14,5 @@ def get_json_data() -> dict:
         sys.exit(-1)
 
     json_object = response.json()
+    print('Data gathered from api')
     return json_object
