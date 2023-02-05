@@ -1,5 +1,5 @@
 import requests
-from secrets import wufoo_key
+from secrets import wufoo_key  # type: ignore reportShadowedImport
 import sys
 from requests.auth import HTTPBasicAuth
 
