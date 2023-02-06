@@ -17,7 +17,7 @@ def set_up_database() -> sqlite3.Connection | sqlite3.Cursor | str:
         print('Successfully connected to database')
         # create the table
         table_name = "entries"
-        make_entry_table(db_cursor, db_connection, table_name)
+        make_entry_table(db_connection, db_cursor, table_name)
         print('Successfully created all tables')
     except sqlite3.Error as db_error:
         print(f'A database error has occurred: {db_error}')
@@ -25,7 +25,7 @@ def set_up_database() -> sqlite3.Connection | sqlite3.Cursor | str:
         return db_connection, db_cursor, table_name
 
 
-def make_entry_table(db_cursor: sqlite3.Cursor, db_connection: sqlite3.Connection, table_name: str) -> None:
+def make_entry_table(db_connection: sqlite3.Connection, db_cursor: sqlite3.Cursor, table_name: str) -> None:
     """This function creates the table if it doesn't exist yes and clears it of old data."""
     try:
         db_cursor.execute(f'''CREATE TABLE IF NOT EXISTS {table_name}(
@@ -63,8 +63,8 @@ def insert_data(entry_lst: list, db_cursor: sqlite3.Cursor, table_name: str) -> 
         jobShadow, internships, careerPanel, networkingEvent, summer2022, fall2022, spring2023, summer2023, otherTime, \
         namePermission = entry_lst
     try:
-        db_cursor.execute(f'''INSERT INTO {table_name} (prefix, firstName, lastName, title, orgName, phoneNumber, email, \
-            orgWebsite, courseProject, guestSpeaker, siteVisit, jobShadow, internships, careerPanel, networkingEvent, \
+        db_cursor.execute(f'''INSERT INTO {table_name} (prefix, firstName, lastName, title, orgName, email, orgWebsite, \
+            phoneNumber, courseProject, guestSpeaker, siteVisit, jobShadow, internships, careerPanel, networkingEvent, \
                 summer2022, fall2022, spring2023, summer2023, otherTime, namePermission) \
                     VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                           (prefix,
@@ -88,8 +88,6 @@ def insert_data(entry_lst: list, db_cursor: sqlite3.Cursor, table_name: str) -> 
                            summer2023,
                            otherTime,
                            namePermission))
-
-        print('All data succesfully inserted into table.')
     except sqlite3.Error as insert_error:
         print(f'A database insert error has occurred: {insert_error}')
 

@@ -6,12 +6,13 @@ import sqlite3
 import db_utils as db
 
 
-def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str) -> None:  # noqa: C901
+def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str, testing: bool) -> None:  # noqa: C901
     """This function loops through the entries returned by the API and gathers the data into a
     neat format for the database insertion"""
     lst = json_object['Entries']
     entry_list = []
-
+    testing_dict = {}
+    count = 1
     for entry in lst:
 
         info_checks(entry['Field1'], entry_list)
@@ -46,7 +47,18 @@ def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str) -> No
 
         db.insert_data(entry_list, db_cursor, table_name)
 
+        if testing:
+            entry_list.insert(0, count)
+            entries_tuple: tuple = tuple(entry_list)
+            testing_dict[count] = entries_tuple
+            count += 1
+
         entry_list.clear()
+
+    print('All data succesfully inserted into tables.')
+
+    if testing:
+        return testing_dict
 
 
 def collab_checks(answer: str, entry_list: list) -> None:
