@@ -7,7 +7,7 @@ import db_utils as db
 from datetime import datetime
 
 
-def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str, testing: bool) -> None:  # noqa: C901
+def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str, testing: bool) -> None:
     """This function loops through the entries returned by the API and gathers the data into a
     neat format for the database insertion"""
     global time

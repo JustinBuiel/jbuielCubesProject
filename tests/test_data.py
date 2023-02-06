@@ -8,7 +8,7 @@ def test_data_amount():
     global json_test
     json_test = get_json_data()
     lst_test = json_test['Entries']
-    assert len(lst_test) == 2
+    assert len(lst_test) >= 10
 
 
 def test_database():
