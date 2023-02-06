@@ -1,8 +1,12 @@
+"""
+This module holds all of the interactions with the database
+"""
+
 import sqlite3
 
 
-def set_up_database():
-    """This function sets up our database and then creates the tables. The function
+def set_up_database() -> sqlite3.Connection | sqlite3.Cursor | str:
+    """This function sets up our database and then creates the table. The function
     returns the important connection and cursor objects for use throughout the program"""
     db_connection = None
     try:
@@ -18,10 +22,11 @@ def set_up_database():
     except sqlite3.Error as db_error:
         print(f'A database error has occurred: {db_error}')
     finally:
-        return db_connection, db_cursor, table_name
+        return db_cursor, db_connection, table_name
 
 
-def make_entry_table(db_cursor: sqlite3.Cursor, db_connection: sqlite3.Connection, table_name: str):
+def make_entry_table(db_cursor: sqlite3.Cursor, db_connection: sqlite3.Connection, table_name: str) -> None:
+    """This function creates the table if it doesn't exist yes and clears it of old data."""
     try:
         db_cursor.execute(f'''CREATE TABLE IF NOT EXISTS {table_name}(
                              entryID INTEGER PRIMARY KEY,
@@ -52,7 +57,8 @@ def make_entry_table(db_cursor: sqlite3.Cursor, db_connection: sqlite3.Connectio
         print(f'A database table creation error has occurred: {create_error}')
 
 
-def insert_data(entry_lst: list, db_cursor: sqlite3.Cursor, table_name: str):
+def insert_data(entry_lst: list, db_cursor: sqlite3.Cursor, table_name: str) -> None:
+    """This function takes a list and a table name and inserts the data from the list into the table with the cursor"""
     prefix, firstName, lastName, title, orgName, email, orgWebsite, phoneNumber, courseProject, guestSpeaker, siteVisit, \
         jobShadow, internships, careerPanel, networkingEvent, summer2022, fall2022, spring2023, summer2023, otherTime, \
         namePermission = entry_lst
@@ -88,7 +94,7 @@ def insert_data(entry_lst: list, db_cursor: sqlite3.Cursor, table_name: str):
         print(f'A database insert error has occurred: {insert_error}')
 
 
-def shut_down_data_base(db_connection):
+def shutdown_database(db_connection: sqlite3.Connection) -> None:
     """This function actually populates the database tables and disconnects from the database"""
     db_connection.commit()
     db_connection.close()

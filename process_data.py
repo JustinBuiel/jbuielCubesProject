@@ -1,7 +1,14 @@
+"""
+This module holds the functions used to process the json data taken from the wufoo API
+"""
+
+import sqlite3
 import db_utils as db
 
 
-def process(json_object: dict, db_cursor, table_name):  # noqa: C901
+def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str) -> None:  # noqa: C901
+    """This function loops through the entries returned by the API and gathers the data into a
+    neat format for the database insertion"""
     lst = json_object['Entries']
     entry_list = []
 
@@ -42,14 +49,16 @@ def process(json_object: dict, db_cursor, table_name):  # noqa: C901
         entry_list.clear()
 
 
-def collab_checks(answer, entry_list):
+def collab_checks(answer: str, entry_list: list) -> None:
+    """This function takes the collaboration and timeframe choice fields and either passes the value or None (null)"""
     if answer != '':
         entry_list.append('yes')
     else:
         entry_list.append(None)
 
 
-def info_checks(answer, entry_list):
+def info_checks(answer: str, entry_list: list) -> None:
+    """This function takes the non-required fields and either passes the value or None (null)"""
     if answer != '':
         entry_list.append(answer)
     else:
