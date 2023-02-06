@@ -22,7 +22,7 @@ def set_up_database() -> sqlite3.Connection | sqlite3.Cursor | str:
     except sqlite3.Error as db_error:
         print(f'A database error has occurred: {db_error}')
     finally:
-        return db_cursor, db_connection, table_name
+        return db_connection, db_cursor, table_name
 
 
 def make_entry_table(db_cursor: sqlite3.Cursor, db_connection: sqlite3.Connection, table_name: str) -> None:
