@@ -4,15 +4,23 @@ This module holds the functions used to process the json data taken from the wuf
 
 import sqlite3
 import db_utils as db
+from datetime import datetime
 
 
 def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str, testing: bool) -> None:  # noqa: C901
     """This function loops through the entries returned by the API and gathers the data into a
     neat format for the database insertion"""
+    global time
+    time = datetime.now().strftime('%Y%m%d-%H%M%S')
+
     lst = json_object['Entries']
     entry_list = []
     testing_dict = {}
     count = 1
+
+    text_file_creation(lst)
+    print('Data written to file')
+
     for entry in lst:
 
         info_checks(entry['Field1'], entry_list)
@@ -75,3 +83,31 @@ def info_checks(answer: str, entry_list: list) -> None:
         entry_list.append(answer)
     else:
         entry_list.append(None)
+
+
+def write_data_to_file(str: str) -> None:
+    """This function takes a string from text_file_creation and writes to the file"""
+    if str == '':
+        return
+    file_name = f"form_entries_{time}.txt"
+    with open(file_name, 'a') as fileIO:
+        fileIO.write(str + '\n')
+
+
+def text_file_creation(lst: list) -> None:
+    """This function takes the list of entries directly and provides a format to write to the file"""
+    entries = len(lst)
+    count = 0
+
+    file_name = f"form_entries_{time}.txt"
+    with open(file_name, 'w') as fileIO:
+        fileIO
+
+    for entry in lst:
+        count += 1
+        for k, v in entry.items():
+            write_data_to_file(f"{k}: {v}")
+        if entries != count:
+            write_data_to_file('\n')
+            write_data_to_file('~~'*24)
+            write_data_to_file('\n')
