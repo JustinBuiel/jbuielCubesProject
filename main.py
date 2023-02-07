@@ -7,7 +7,7 @@ from gather_data import get_json_data
 from process_data import process
 
 
-def main():
+def main():  # comment to test workflow
     """The main function calls other functions and passes their return values to the next step"""
     json_object: dict = get_json_data()
     db_connection, db_cursor, table_name = db.set_up_database()
