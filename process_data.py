@@ -1,5 +1,5 @@
 """
-This module holds the functions used to process the json data taken from the wufoo API
+Functions used to process the json data taken from the wufoo API
 """
 
 import sqlite3
@@ -8,7 +8,7 @@ from datetime import datetime
 
 
 def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str, testing: bool) -> None:
-    """This function loops through the entries returned by the API and gathers the data into a
+    """Loops through the entries returned by the API and gathers the data into a
     neat format for the database insertion"""
     global time
     time = datetime.now().strftime('%Y%m%d-%H%M%S')
@@ -22,7 +22,7 @@ def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str, testi
     print('Data written to file')
 
     for entry in lst:
-
+        # personal information
         info_checks(entry['Field1'], entry_list)
         entry_list.append(entry['Field2'])
         entry_list.append(entry['Field3'])
@@ -31,12 +31,14 @@ def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str, testi
         info_checks(entry['Field6'], entry_list)
         info_checks(entry['Field7'], entry_list)
 
+        # format phone number
         if entry['Field9'] != '':
             entry_list.append(str(entry['Field9'][:3] + '-' +
                                   entry['Field9'][3:6] + '-' + entry['Field9'][6:]))
         else:
             entry_list.append(None)
 
+        # what collaborations they are interested in
         collab_checks(entry['Field11'], entry_list)
         collab_checks(entry['Field12'], entry_list)
         collab_checks(entry['Field13'], entry_list)
@@ -45,6 +47,7 @@ def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str, testi
         collab_checks(entry['Field16'], entry_list)
         collab_checks(entry['Field17'], entry_list)
 
+        # what timeframe they are interested in
         collab_checks(entry['Field111'], entry_list)
         collab_checks(entry['Field112'], entry_list)
         collab_checks(entry['Field113'], entry_list)
@@ -70,7 +73,7 @@ def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str, testi
 
 
 def collab_checks(answer: str, entry_list: list) -> None:
-    """This function takes the collaboration and timeframe choice fields and either passes the value or None (null)"""
+    """Takes the collaboration and timeframe choice fields and either passes yes or None (null)"""
     if answer != '':
         entry_list.append('yes')
     else:
@@ -78,36 +81,33 @@ def collab_checks(answer: str, entry_list: list) -> None:
 
 
 def info_checks(answer: str, entry_list: list) -> None:
-    """This function takes the non-required fields and either passes the value or None (null)"""
+    """Takes the non-required fields and either passes the value or None (null)"""
     if answer != '':
         entry_list.append(answer)
     else:
         entry_list.append(None)
 
 
-def write_data_to_file(str: str) -> None:
-    """This function takes a string from text_file_creation and writes to the file"""
+def write_data_to_file(str: str, file_name: str) -> None:
+    """Takes a string from text_file_creation and writes to the file"""
     if str == '':
         return
-    file_name = f"form_entries_{time}.txt"
+
     with open(file_name, 'a') as fileIO:
         fileIO.write(str + '\n')
 
 
 def text_file_creation(lst: list) -> None:
-    """This function takes the list of entries directly and provides a format to write to the file"""
+    """Takes the list of entries directly and provides a format to write to the file"""
     entries = len(lst)
     count = 0
-
     file_name = f"form_entries_{time}.txt"
-    with open(file_name, 'w') as fileIO:
-        fileIO
 
     for entry in lst:
         count += 1
         for k, v in entry.items():
-            write_data_to_file(f"{k}: {v}")
+            write_data_to_file(f"{k}: {v}", file_name)
         if entries != count:
-            write_data_to_file('\n')
-            write_data_to_file('~~'*24)
-            write_data_to_file('\n')
+            write_data_to_file('\n', file_name)
+            write_data_to_file('~~'*24, file_name)
+            write_data_to_file('\n', file_name)
