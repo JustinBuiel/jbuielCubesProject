@@ -98,3 +98,14 @@ def shutdown_database(db_connection: sqlite3.Connection) -> None:
         db_connection.close()
     except sqlite3.Error as shutdown_error:
         print(f'A database shutdown error has occurred: {shutdown_error}')
+
+
+def get_minimal_data(db_cursor: sqlite3.Cursor) -> list:
+    return_list = []
+    response = db_cursor.execute(
+        '''SELECT orgName, lastName, firstName FROM entries''')
+    for row in response:
+        string = str(row[0]) + ': ' + str(row[1]) + ', ' + str(row[2])
+        return_list.append(string)
+
+    return return_list

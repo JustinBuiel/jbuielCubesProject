@@ -22,8 +22,7 @@ def main():  # comment to test workflow
 
 
 if __name__ == "__main__":
-    main()
-
+    # main()
     app = QApplication([])
     widget = gui.MyWidget()
     widget.show()

@@ -1,25 +1,43 @@
 import random
-
+import sqlite3
+import db_utils as db
 from PySide6.QtCore import Qt, Slot
-from PySide6.QtWidgets import (QLabel, QPushButton,
-                               QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QLabel, QPushButton, QScrollArea,
+                               QVBoxLayout, QWidget, QMainWindow)
 
-
-class MyWidget(QWidget):
+# got a lot of this code from https://www.pythonguis.com/tutorials/pyqt6-qscrollarea/
+class MyWidget(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.hello = ["Hallo Welt", "Hei maailma", "Hola Mundo", "Привет мир"]
+        db_connection = sqlite3.connect('form_entries.db')
+        db_cursor = db_connection.cursor()
 
-        self.button = QPushButton("Click me!")
-        self.text = QLabel("Hello World",
-                           alignment=Qt.AlignCenter)
+        # try to get list of data for short version of entries
+        self.entries: list = db.get_minimal_data(db_cursor)
 
-        self.layout = QVBoxLayout(self)
-        self.layout.addWidget(self.text)
-        self.layout.addWidget(self.button)
+        self.scroll = QScrollArea()
+        self.widget = QWidget()
+        self.vbox = QVBoxLayout()
 
-        self.button.clicked.connect(self.magic)
+        for entry in self.entries:
+            # object = QLabel(entry)
+            # self.vbox.addWidget(object)
+            self.vbox.addWidget(QPushButton(text=entry))
+
+        self.widget.setLayout(self.vbox)
+
+        self.scroll.setVerticalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(self.widget)
+
+        self.setCentralWidget(self.scroll)
+
+        self.setGeometry(600, 100, 1000, 900)
+        self.setWindowTitle('Scroll Area Demonstration')
 
     @Slot()
     def magic(self):
