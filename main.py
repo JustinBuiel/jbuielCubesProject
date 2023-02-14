@@ -2,12 +2,12 @@
 This is the main driver module that handles the interactions between the other modules
 """
 
+import sys
+from PySide6.QtWidgets import QApplication
 import db_utils as db
+import gui
 from gather_data import get_json_data
 from process_data import process
-import gui
-from PySide6.QtWidgets import QApplication
-import sys
 
 
 def main():  # comment to test workflow

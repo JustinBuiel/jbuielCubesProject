@@ -1,4 +1,4 @@
-from db_utils import make_entry_table, set_up_database
+from db_utils import set_up_database
 from gather_data import get_json_data
 from process_data import process
 
@@ -14,7 +14,6 @@ def test_database():
     # create database and table, get data and insert into table
     db_connection, db_cursor, table_name = set_up_database(
         db_name="data_testing.db", table_name="testTable")
-    make_entry_table(db_connection, db_cursor, table_name)
     entries_dict = process(json_test, db_cursor, table_name, True)
     db_connection.commit()
 
