@@ -2,10 +2,12 @@ import random
 import sqlite3
 import db_utils as db
 from PySide6.QtCore import Qt, Slot
-from PySide6.QtWidgets import (QLabel, QPushButton, QScrollArea,
+from PySide6.QtWidgets import (QPushButton, QScrollArea,
                                QVBoxLayout, QWidget, QMainWindow)
 
 # got a lot of this code from https://www.pythonguis.com/tutorials/pyqt6-qscrollarea/
+
+
 class MyWidget(QMainWindow):
     def __init__(self):
         super().__init__()
