@@ -5,7 +5,7 @@ Holds all of the interactions with the database
 import sqlite3
 
 
-def set_up_database(db_name, table_name) -> sqlite3.Connection | sqlite3.Cursor | str:
+def set_up_database(db_name: str, table_name: str) -> sqlite3.Connection | sqlite3.Cursor | str:
     """Sets up our database and then creates the table. The names for the databse and table(s) are accepted as parameters.
     The function returns the important connection and cursor objects and table_name for use throughout the program."""
     db_connection = None
@@ -16,7 +16,7 @@ def set_up_database(db_name, table_name) -> sqlite3.Connection | sqlite3.Cursor 
         print('Successfully connected to database')
 
         # create the table(s)
-        make_entry_table(db_connection, db_cursor, table_name[0])
+        _make_entry_table(db_connection, db_cursor, table_name)
         print('Successfully created all tables')
     except sqlite3.Error as connection_error:
         print(f'A database error has occurred: {connection_error}')
@@ -24,7 +24,7 @@ def set_up_database(db_name, table_name) -> sqlite3.Connection | sqlite3.Cursor 
         return db_connection, db_cursor, table_name
 
 
-def make_entry_table(db_connection: sqlite3.Connection, db_cursor: sqlite3.Cursor, table_name: str) -> None:
+def _make_entry_table(db_connection: sqlite3.Connection, db_cursor: sqlite3.Cursor, table_name: str) -> None:
     """Creates the table if it doesn't exist yet and clears it of old data."""
     try:
         db_cursor.execute(f'''CREATE TABLE IF NOT EXISTS {table_name}(

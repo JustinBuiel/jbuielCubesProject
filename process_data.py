@@ -88,13 +88,11 @@ def info_checks(answer: str, entry_list: list) -> None:
         entry_list.append(None)
 
 
-def write_data_to_file(str: str, file_name: str) -> None:
+def write_data_to_file(str: str, fileIO) -> None:
     """Takes a string from text_file_creation and writes to the file"""
     if str == '':
         return
-
-    with open(file_name, 'a') as fileIO:
-        fileIO.write(str + '\n')
+    fileIO.write(str + '\n')
 
 
 def text_file_creation(lst: list) -> None:
@@ -103,11 +101,12 @@ def text_file_creation(lst: list) -> None:
     count = 0
     file_name = f"form_entries_{time}.txt"
 
-    for entry in lst:
-        count += 1
-        for k, v in entry.items():
-            write_data_to_file(f"{k}: {v}", file_name)
-        if entries != count:
-            write_data_to_file('\n', file_name)
-            write_data_to_file('~~'*24, file_name)
-            write_data_to_file('\n', file_name)
+    with open(file_name, 'a') as fileIO:
+        for entry in lst:
+            count += 1
+            for k, v in entry.items():
+                write_data_to_file(f"{k}: {v}", fileIO)
+            if entries != count:
+                write_data_to_file('\n', fileIO)
+                write_data_to_file('~~'*24, fileIO)
+                write_data_to_file('\n', fileIO)

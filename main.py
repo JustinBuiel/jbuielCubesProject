@@ -5,6 +5,9 @@ This is the main driver module that handles the interactions between the other m
 import db_utils as db
 from gather_data import get_json_data
 from process_data import process
+import gui
+from PySide6.QtWidgets import QApplication
+import sys
 
 
 def main():  # comment to test workflow
@@ -15,10 +18,13 @@ def main():  # comment to test workflow
         db_name="form_entries.db", table_name="entries")
     process(json_object, db_cursor, table_name, False)
 
-    # todo: gui stuff starts here
-
     db.shutdown_database(db_connection)
 
 
 if __name__ == "__main__":
     main()
+
+    app = QApplication([])
+    widget = gui.MyWidget()
+    widget.show()
+    sys.exit(app.exec())
