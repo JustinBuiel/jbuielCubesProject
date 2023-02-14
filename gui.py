@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (QPushButton, QScrollArea,
 
 # test
 
+
 class MyWidget(QMainWindow):
     def __init__(self):
         super().__init__()
