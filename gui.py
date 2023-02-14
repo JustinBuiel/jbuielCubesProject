@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (QPushButton, QScrollArea,
 
 # got a lot of this code from https://www.pythonguis.com/tutorials/pyqt6-qscrollarea/
 
+# test
 
 class MyWidget(QMainWindow):
     def __init__(self):
