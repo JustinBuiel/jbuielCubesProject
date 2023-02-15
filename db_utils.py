@@ -103,9 +103,16 @@ def shutdown_database(db_connection: sqlite3.Connection) -> None:
 def get_minimal_data(db_cursor: sqlite3.Cursor) -> list:
     return_list = []
     response = db_cursor.execute(
-        '''SELECT orgName, lastName, firstName FROM entries''')
+        '''SELECT entryID, orgName, lastName, firstName FROM entries''')
     for row in response:
-        string = str(row[0]) + ': ' + str(row[1]) + ', ' + str(row[2])
+        string = str(row[0] + '. ' + row[1]) + ': ' + \
+            str(row[2]) + ', ' + str(row[3])
         return_list.append(string)
 
     return return_list
+
+
+def get_entries_dict() -> dict:
+    # todo: get a dictionary of the entries and return it so the info page can be
+    # populated without accessing the database every time
+    return None

@@ -3,7 +3,7 @@ This is the main driver module that handles the interactions between the other m
 """
 
 import sys
-from PySide6.QtWidgets import QApplication
+import PySide6.QtWidgets as QtWidgets
 import db_utils as db
 import gui
 from gather_data import get_json_data
@@ -23,7 +23,8 @@ def main():  # comment to test workflow
 
 if __name__ == "__main__":
     # main()
-    app = QApplication([])
-    widget = gui.MyWidget()
-    widget.show()
-    sys.exit(app.exec())
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = gui.list_of_btns(MainWindow)
+    MainWindow.show()
+    app.exec()
