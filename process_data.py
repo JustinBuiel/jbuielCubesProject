@@ -3,8 +3,8 @@ Functions used to process the json data taken from the wufoo API
 """
 
 import sqlite3
-import db_utils as db
 from datetime import datetime
+import db_utils as db
 
 
 def process(json_object: dict, db_cursor: sqlite3.Cursor, table_name: str, testing: bool) -> None:
