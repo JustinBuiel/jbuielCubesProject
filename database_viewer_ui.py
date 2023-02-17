@@ -101,7 +101,7 @@ class database_viewer(QW.QWidget):
         new_dict = self.check_boxes(new_dict, id, col=0, stop=' Summer 2022')
         new_dict = self.check_boxes(
             new_dict, id, col=4, stop='Do we have your permission to use your organization\'s name?')
-        count+=2
+        count += 2
         while True:
             try:
                 self.widge = self.rightLayout.itemAt(count).widget()
