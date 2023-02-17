@@ -23,7 +23,7 @@ def main():  # comment to test workflow
 
 
 if __name__ == "__main__":
-    # main()
+    main()
     app = QtWidgets.QApplication(sys.argv)
     app_palette = app.palette()
     app_paltete = set(app_palette)
@@ -33,4 +33,5 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     ui = database_viewer_ui.database_viewer(MainWindow)
     MainWindow.show()
+    print('Running UI')
     app.exec()

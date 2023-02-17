@@ -69,7 +69,7 @@ class database_viewer(QW.QWidget):
         dict = self.entries_dict
         button = self.sender()
         number = button.objectName()
-        print(button.objectName())
+
         count = 0
         for char in number:
             if char == '.':
@@ -82,8 +82,8 @@ class database_viewer(QW.QWidget):
     def show_data(self, id, entries_dict):
         new_dict = {k: v for k, v in entries_dict.items()}
         new_dict = self.first_rows(
-            new_dict, id, row=1, stop='Organization Name')
-        new_dict = self.first_rows(new_dict, id, row=4, stop='Course Project')
+            new_dict, id, row=1, stop=' Organization Name')
+        new_dict = self.first_rows(new_dict, id, row=4, stop=' Course Project')
 
         self.rightLayout.addItem(QW.QSpacerItem(0, 30), 3, 0, 1, 8)
 
@@ -98,10 +98,10 @@ class database_viewer(QW.QWidget):
                 break
 
         self.rightLayout.addItem(QW.QSpacerItem(0, 30), 7, 0, 1, 8)
-        new_dict = self.check_boxes(new_dict, id, col=0, stop='Summer 2022')
+        new_dict = self.check_boxes(new_dict, id, col=0, stop=' Summer 2022')
         new_dict = self.check_boxes(
-            new_dict, id, col=4, stop='Org Name Permission')
-
+            new_dict, id, col=4, stop='Do we have your permission to use your organization\'s name?')
+        count+=2
         while True:
             try:
                 self.widge = self.rightLayout.itemAt(count).widget()
@@ -109,6 +109,13 @@ class database_viewer(QW.QWidget):
                 count += 1
             except AttributeError:
                 break
+
+        self.rightLayout.addItem(QW.QSpacerItem(0, 30), 16, 0, 1, 8)
+        for label, info in new_dict[id].items():
+            self.rightLayout.addWidget(QW.QLabel(text=label), 17, 0, 1, 4)
+            answer = QW.QLineEdit(info)
+            answer.setEnabled(False)
+            self.rightLayout.addWidget(answer, 17, 4, 1, 4)
 
     def first_rows(self, new_dict, id, row, stop):
         count = -1

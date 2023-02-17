@@ -156,6 +156,6 @@ def labelled_info_dict(res_tuple: tuple) -> dict:
     return_dict[' Spring 2023'] = res_tuple[17]
     return_dict[' Summer 2023'] = res_tuple[18]
     return_dict[' Other Timeframe'] = res_tuple[19]
-    return_dict['Org Name Permission'] = res_tuple[20]
+    return_dict['Do we have your permission to use your organization\'s name?'] = res_tuple[20]
 
     return return_dict
