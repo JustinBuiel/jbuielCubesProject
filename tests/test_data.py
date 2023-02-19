@@ -4,6 +4,7 @@ from process_data import process
 from database_viewer_ui import database_viewer
 import sqlite3
 import PySide6.QtWidgets as QtWidgets
+import sys
 
 
 def test_api_data_amount():
@@ -52,7 +53,7 @@ def test_data_in_table():
 
 def test_gui_info():
     # test 4 sprint 3
-    QtWidgets.QApplication([])
+    QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = database_viewer(MainWindow)
     labelled_entries_dict = get_labelled_dict()
