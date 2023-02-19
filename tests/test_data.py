@@ -4,7 +4,6 @@ from process_data import process
 from database_viewer_ui import database_viewer
 import sqlite3
 import PySide6.QtWidgets as QtWidgets
-import sys
 
 
 def test_api_data_amount():
@@ -53,7 +52,8 @@ def test_data_in_table():
 
 def test_gui_info():
     # test 4 sprint 3
-    QtWidgets.QApplication(sys.argv)
+    set_up_entries_table()
+    QtWidgets.QApplication([])
     MainWindow = QtWidgets.QMainWindow()
     ui = database_viewer(MainWindow)
     labelled_entries_dict = get_labelled_dict()
@@ -122,3 +122,13 @@ def get_labelled_dict():
     except sqlite3.Error as db_connect_error:
         print(f'A gui database error has occurred: {db_connect_error}')
     return labelled_entries_dict
+
+
+def set_up_entries_table():
+    json_object: dict = get_json_data()
+
+    db_connection, db_cursor, table_name = db.set_up_database(
+        db_name="form_entries.db", table_name="entries")
+    process(json_object, db_cursor, table_name, False)
+
+    db.shutdown_database(db_connection)
