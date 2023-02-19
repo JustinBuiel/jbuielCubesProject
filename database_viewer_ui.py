@@ -31,7 +31,7 @@ class database_viewer(QW.QWidget):
         try:
             db_connection = sqlite3.connect('form_entries.db')
             db_cursor = db_connection.cursor()
-            self.entries_dict = db.get_entries_dict(db_cursor)
+            self.labelled_entries_dict = db.get_entries_dict(db_cursor)
         except sqlite3.Error as db_connect_error:
             print(f'A gui database error has occurred: {db_connect_error}')
 
@@ -45,7 +45,7 @@ class database_viewer(QW.QWidget):
         self.scrollLayout.addWidget(self.scrollArea)
         self.outerLayout.addLayout(self.scrollLayout)
 
-        self.show_data(id=1, entries_dict=self.entries_dict)
+        # self.show_data(id=1, labelled_entries_dict=self.labelled_entries_dict)
         self.outerLayout.addLayout(self.rightLayout)
 
         self.outerWidget.setLayout(self.outerLayout)
@@ -66,7 +66,7 @@ class database_viewer(QW.QWidget):
     @Slot()
     def click_handler(self):
         """Handle button clicks on main page"""
-        dict = self.entries_dict
+        dict = self.labelled_entries_dict
         button = self.sender()
         number = button.objectName()
 
@@ -77,10 +77,10 @@ class database_viewer(QW.QWidget):
             count += 1
         number = number[:count]
 
-        self.show_data(id=int(number), entries_dict=dict)
+        self.show_data(id=int(number), labelled_entries_dict=dict)
 
-    def show_data(self, id, entries_dict):
-        new_dict = {k: v for k, v in entries_dict.items()}
+    def show_data(self, id, labelled_entries_dict):
+        new_dict = {k: v for k, v in labelled_entries_dict.items()}
         new_dict = self.first_rows(
             new_dict, id, row=1, stop=' Organization Name')
         new_dict = self.first_rows(new_dict, id, row=4, stop=' Course Project')

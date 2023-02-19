@@ -99,9 +99,9 @@ def text_file_creation(lst: list) -> None:
     """Takes the list of entries directly and provides a format to write to the file"""
     entries = len(lst)
     count = 0
-    file_name = f"form_entries_{time}.txt"
+    file_name = "form_entries.txt"
 
-    with open(file_name, 'a') as fileIO:
+    with open(file_name, 'w') as fileIO:
         for entry in lst:
             count += 1
             for k, v in entry.items():

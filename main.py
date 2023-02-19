@@ -5,7 +5,7 @@ This is the main driver module that handles the interactions between the other m
 import sys
 import PySide6.QtWidgets as QtWidgets
 import db_utils as db
-import database_viewer_ui
+from database_viewer_ui import database_viewer
 from gather_data import get_json_data
 from process_data import process
 from style_sheet import set
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     app.setStyle('Fusion')
 
     MainWindow = QtWidgets.QMainWindow()
-    ui = database_viewer_ui.database_viewer(MainWindow)
+    ui = database_viewer(MainWindow)
     MainWindow.show()
     print('Running UI')
     app.exec()

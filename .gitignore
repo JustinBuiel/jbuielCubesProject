@@ -3,4 +3,4 @@ secrets.py
 __pycache__
 .venv
 *.db
-form_entries_*.txt
+form_entries.txt
