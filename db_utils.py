@@ -50,17 +50,18 @@ def _make_entry_table(db_connection: sqlite3.Connection, db_cursor: sqlite3.Curs
                              summer2023 TEXT,
                              otherTime TEXT,
                              namePermission TEXT);''')
+
         db_cursor.execute(f'''DELETE FROM {table_name}''')
         db_connection.commit()
     except sqlite3.Error as creation_error:
         print(f'A database table creation error occurred: {creation_error}')
 
 
-def insert_data(entry_lst: list, db_cursor: sqlite3.Cursor, table_name: str) -> None:
+def insert_data(individual_entry_list: list, db_cursor: sqlite3.Cursor, table_name: str) -> None:
     """Inserts the entry data from the list into the appropriate table"""
     prefix, firstName, lastName, title, orgName, email, orgWebsite, phoneNumber, courseProject, guestSpeaker, siteVisit, \
         jobShadow, internships, careerPanel, networkingEvent, summer2022, fall2022, spring2023, summer2023, otherTime, \
-        namePermission = entry_lst
+        namePermission = individual_entry_list
     try:
         db_cursor.execute(f'''INSERT INTO {table_name} (prefix, firstName, lastName, title, orgName, email, orgWebsite, \
             phoneNumber, courseProject, guestSpeaker, siteVisit, jobShadow, internships, careerPanel, networkingEvent, \
@@ -87,6 +88,7 @@ def insert_data(entry_lst: list, db_cursor: sqlite3.Cursor, table_name: str) -> 
                            summer2023,
                            otherTime,
                            namePermission))
+
     except sqlite3.Error as insert_error:
         print(f'A database insert error has occurred: {insert_error}')
 
