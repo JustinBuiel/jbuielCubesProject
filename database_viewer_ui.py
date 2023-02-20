@@ -3,19 +3,22 @@ import PySide6.QtWidgets as QW
 from PySide6.QtCore import QMetaObject, Qt, Slot
 import db_utils as db
 
-try:
-    DB_CONNECTION = sqlite3.connect('form_entries.db')
-    DB_CURSOR = DB_CONNECTION.cursor()
-    TAGGED_ENTRIES: dict[int, dict[str, str]] = db.get_tagged_dict(DB_CURSOR)
-    BUTTON_STRINGS: list[str] = db.get_button_data(DB_CURSOR)
-except sqlite3.Error as db_connect_error:
-    print(f'A gui database error has occurred: {db_connect_error}')
-
 
 class database_viewer(QW.QWidget):
-    def __init__(self, main_window: QW.QMainWindow) -> None:
+    def __init__(self, main_window: QW.QMainWindow, db_name: str, table_name: str) -> None:
         QW.QWidget.__init__(self)
         main_window.resize(1280, 720)
+
+        try:
+            db_connection = sqlite3.connect(db_name)
+            db_cursor = db_connection.cursor()
+            self.tagged_entries: dict[int, dict[str, str]
+                                      ] = db.get_tagged_dict(db_cursor, table_name)
+            self.button_strings: list[str] = db.get_button_data(
+                db_cursor, table_name)
+            db.shutdown_database(db_connection)
+        except sqlite3.Error as db_connect_error:
+            print(f'A gui database error has occurred: {db_connect_error}')
 
         # setup main conatiner widget
         self.outer_widget = QW.QWidget()
@@ -30,7 +33,7 @@ class database_viewer(QW.QWidget):
             Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.scroll_area.setWidgetResizable(True)
 
-        for string in BUTTON_STRINGS:
+        for string in self.button_strings:
             self._add_button(string)
 
         # finalize left widget and layout
@@ -80,12 +83,12 @@ class database_viewer(QW.QWidget):
             char_counter += 1
         id_number: int = int(button_string[:char_counter])
 
-        self._show_entry_data(id_number)
+        self.show_entry_data(id_number)
 
-    def _show_entry_data(self, id: int) -> None:
+    def show_entry_data(self, id: int) -> None:
         """click handler calls this to populate the data fields in right_layout"""
         display__instance: dict[int, dict[str, str]] = {
-            k: v for k, v in TAGGED_ENTRIES.items()}
+            k: v for k, v in self.tagged_entries.items()}
 
         display__instance = self._first_rows(
             display__instance, id, 1, 'Organization Name')

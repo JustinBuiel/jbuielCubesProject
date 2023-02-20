@@ -5,7 +5,7 @@ Holds all of the interactions with the database
 import sqlite3
 
 
-def set_up_database(db_name: str, table_name: str) -> sqlite3.Connection | sqlite3.Cursor | str:
+def set_up_database(db_name: str, table_name: str) -> sqlite3.Connection | sqlite3.Cursor:
     """Sets up our database and then creates the table. The names for the databse and table(s) are accepted as parameters.
     The function returns the important connection and cursor objects and table_name for use throughout the program."""
     db_connection = None
@@ -21,7 +21,7 @@ def set_up_database(db_name: str, table_name: str) -> sqlite3.Connection | sqlit
     except sqlite3.Error as connection_error:
         print(f'A database error has occurred: {connection_error}')
     finally:
-        return db_connection, db_cursor, table_name
+        return db_connection, db_cursor
 
 
 def _make_entry_table(db_connection: sqlite3.Connection, db_cursor: sqlite3.Cursor, table_name: str) -> None:
@@ -102,14 +102,14 @@ def shutdown_database(db_connection: sqlite3.Connection) -> None:
         print(f'A database shutdown error has occurred: {shutdown_error}')
 
 
-def get_button_data(db_cursor: sqlite3.Cursor) -> list[str]:
+def get_button_data(db_cursor: sqlite3.Cursor, table_name) -> list[str]:
     return_list = []
     try:
         response = db_cursor.execute(
-            '''SELECT entryID, orgName, lastName, firstName FROM entries''')
-    except sqlite3.Error as minimal_data_error:
+            f'''SELECT entryID, orgName, lastName, firstName FROM {table_name}''')
+    except sqlite3.Error as button_data_error:
         print(
-            f'A database error while accessing minimal data has occurrred: {minimal_data_error}')
+            f'A database error while accessing button data has occurrred: {button_data_error}')
     for row in response:
         string = str(str(row[0]) + '. ' + row[1] + ': ' +
                      row[2] + ', ' + row[3])
@@ -118,12 +118,12 @@ def get_button_data(db_cursor: sqlite3.Cursor) -> list[str]:
     return return_list
 
 
-def get_tagged_dict(db_cursor: sqlite3.Cursor) -> dict[int, dict[str, str]]:
+def get_tagged_dict(db_cursor: sqlite3.Cursor, table_name) -> dict[int, dict[str, str]]:
     """get a dictionary of the entries and return it so the info page can be populated
     without accessing the database every time"""
     return_dict: dict[int, dict[str, str]] = {}
     try:
-        response = db_cursor.execute('''SELECT * FROM entries''')
+        response = db_cursor.execute(f'''SELECT * FROM {table_name}''')
     except sqlite3.Error as get_entries_error:
         print(
             f'A database access error has occurred while getting entry data for dictionary storage: {get_entries_error}')

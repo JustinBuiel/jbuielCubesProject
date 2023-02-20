@@ -2,133 +2,107 @@ import db_utils as db
 from gather_data import get_json_data
 from process_data import process
 from database_viewer_ui import database_viewer
-import sqlite3
+# import sqlite3
 import PySide6.QtWidgets as QtWidgets
+
+DB_NAME = "data_testing.db"
+TABLE_NAME = "test_table"
+ID_TO_TEST = 5
+JSON_TEST = get_json_data()
 
 
 def test_api_data_amount():
     # test 1 sprint 2
-    json_test = get_json_data()
-    lst_test = json_test['Entries']
+    lst_test = JSON_TEST['Entries']
     assert len(lst_test) >= 10
 
 
 def test_entry_in_database():
     # test 2 sprint 2
-    db_connection, db_cursor, raw_entries_dict = database_helper()
-
-    response = db_cursor.execute('''SELECT * FROM testTable''')
-    count = 1
+    DB_CONNECTION, DB_CURSOR = db.set_up_database(DB_NAME, TABLE_NAME)
+    RAW_ENTRIES = process(JSON_TEST, DB_CURSOR, TABLE_NAME, True)
+    response = DB_CURSOR.execute(f'''SELECT * FROM {TABLE_NAME}''')
+    counter = 1
     for row in response:
-        entries_tuple = raw_entries_dict[count]
-        assert entries_tuple == row
-        count += 1
-    db_connection.close()
+        assert RAW_ENTRIES[counter] == row
+        counter += 1
+
+    db.shutdown_database(DB_CONNECTION)
 
 
 def test_data_in_table():
     # test 3 sprint 3
-    db_connection, db_cursor, raw_entries_dict = database_helper()
+    DB_CONNECTION, DB_CURSOR = db.set_up_database(DB_NAME, TABLE_NAME)
+    RAW_ENTRIES = process(JSON_TEST, DB_CURSOR, TABLE_NAME, True)
 
-    db_cursor.execute('''SELECT * FROM testTable''')
-    results = db_cursor.fetchall()
+    DB_CURSOR.execute(f'''SELECT * FROM {TABLE_NAME}''')
+    results = DB_CURSOR.fetchall()
     if len(results) > 0:
         assert True
+        assert len(RAW_ENTRIES) == len(results)
     else:
         assert False
 
-    db.shutdown_database(db_connection)
+    db.shutdown_database(DB_CONNECTION)
 
-    db_connection, db_cursor = database_unhelper()
+    DB_CONNECTION, DB_CURSOR = db.set_up_database(DB_NAME, TABLE_NAME)
 
-    db_cursor.execute('''SELECT * FROM testTable''')
-    results = db_cursor.fetchall()
+    DB_CURSOR.execute(f'''SELECT * FROM {TABLE_NAME}''')
+    results = DB_CURSOR.fetchall()
     # no data inserted so there shouldn't be any responses
     if len(results) == 0:
         assert True
     else:
         assert False
 
+    db.shutdown_database(DB_CONNECTION)
+
 
 def test_gui_info():
     # test 4 sprint 3
-    set_up_entries_table()
+    DB_CONNECTION, DB_CURSOR = db.set_up_database(DB_NAME, TABLE_NAME)
+    process(JSON_TEST, DB_CURSOR, TABLE_NAME, False)
+    tagged_entries = db.get_tagged_dict(DB_CURSOR, TABLE_NAME)
+    db.shutdown_database(DB_CONNECTION)
+
     QtWidgets.QApplication([])
-    MainWindow = QtWidgets.QMainWindow()
-    ui = database_viewer(MainWindow)
-    labelled_entries_dict = get_labelled_dict()
-    ui.show_data(id=2, labelled_entries_dict=labelled_entries_dict)
+    main_window = QtWidgets.QMainWindow()
+    ui = database_viewer(main_window, DB_NAME, TABLE_NAME)
+    ui.show_entry_data(ID_TO_TEST)
 
-    response = ui.rightLayout.itemAt(3).widget()
-    assert response.text() == labelled_entries_dict[2][' First Name']
+    response = ui.right_layout.itemAt(3).widget()
+    assert response.text() == tagged_entries[ID_TO_TEST]['First Name']
 
-    response = ui.rightLayout.itemAt(5).widget()
-    assert response.text() == labelled_entries_dict[2][' Last Name']
+    response = ui.right_layout.itemAt(5).widget()
+    assert response.text() == tagged_entries[ID_TO_TEST]['Last Name']
 
-    response = ui.rightLayout.itemAt(11).widget()
-    assert response.text() == labelled_entries_dict[2][' Email']
+    response = ui.right_layout.itemAt(12).widget()
+    assert response.text() == tagged_entries[ID_TO_TEST]['Email']
 
-    response = ui.rightLayout.itemAt(13).widget()
-    assert response.text() == labelled_entries_dict[2][' Organization Website']
+    response = ui.right_layout.itemAt(14).widget()
+    assert response.text(
+    ) == tagged_entries[ID_TO_TEST]['Organization Website']
 
-    response = ui.rightLayout.itemAt(19).widget()
-    if labelled_entries_dict[2][' Course Project'] == 'yes':
+    response = ui.right_layout.itemAt(19).widget()
+    if tagged_entries[ID_TO_TEST]['Course Project'] == 'yes':
         assert response.isChecked() is True
     else:
         assert response.isChecked() is False
 
-    response = ui.rightLayout.itemAt(20).widget()
-    if labelled_entries_dict[2][' Guest Speaker'] == 'yes':
+    response = ui.right_layout.itemAt(20).widget()
+    if tagged_entries[ID_TO_TEST]['Guest Speaker'] == 'yes':
         assert response.isChecked() is True
     else:
         assert response.isChecked() is False
 
-    response = ui.rightLayout.itemAt(23).widget()
-    if labelled_entries_dict[2][' Internships'] == 'yes':
+    response = ui.right_layout.itemAt(23).widget()
+    if tagged_entries[ID_TO_TEST]['Internships'] == 'yes':
         assert response.isChecked() is True
     else:
         assert response.isChecked() is False
 
-    response = ui.rightLayout.itemAt(30).widget()
-    if labelled_entries_dict[2][' Summer 2023'] == 'yes':
+    response = ui.right_layout.itemAt(30).widget()
+    if tagged_entries[ID_TO_TEST]['Summer 2023'] == 'yes':
         assert response.isChecked() is True
     else:
         assert response.isChecked() is False
-
-
-def database_helper():
-    json_test = get_json_data()
-    db_connection, db_cursor, table_name = db.set_up_database(
-        db_name="data_testing.db", table_name="testTable")
-    raw_entries_dict = process(json_test, db_cursor, table_name, True)
-    db_connection.commit()
-
-    return db_connection, db_cursor, raw_entries_dict
-
-
-def database_unhelper():
-    db_connection, db_cursor, table_name = db.set_up_database(
-        db_name="data_testing.db", table_name="testTable")
-    db_connection.commit()
-
-    return db_connection, db_cursor
-
-
-def get_labelled_dict():
-    try:
-        db_connection = sqlite3.connect('form_entries.db')
-        db_cursor = db_connection.cursor()
-        labelled_entries_dict = db.get_entries_dict(db_cursor)
-    except sqlite3.Error as db_connect_error:
-        print(f'A gui database error has occurred: {db_connect_error}')
-    return labelled_entries_dict
-
-
-def set_up_entries_table():
-    json_object: dict = get_json_data()
-
-    db_connection, db_cursor, table_name = db.set_up_database(
-        db_name="form_entries.db", table_name="entries")
-    process(json_object, db_cursor, table_name, False)
-
-    db.shutdown_database(db_connection)
