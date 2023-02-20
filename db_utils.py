@@ -102,7 +102,7 @@ def shutdown_database(db_connection: sqlite3.Connection) -> None:
         print(f'A database shutdown error has occurred: {shutdown_error}')
 
 
-def get_minimal_data(db_cursor: sqlite3.Cursor) -> list:
+def get_button_data(db_cursor: sqlite3.Cursor) -> list[str]:
     return_list = []
     try:
         response = db_cursor.execute(
@@ -118,10 +118,10 @@ def get_minimal_data(db_cursor: sqlite3.Cursor) -> list:
     return return_list
 
 
-def get_entries_dict(db_cursor: sqlite3.Cursor) -> dict:
+def get_tagged_dict(db_cursor: sqlite3.Cursor) -> dict[int, dict[str, str]]:
     """get a dictionary of the entries and return it so the info page can be populated
     without accessing the database every time"""
-    return_dict = {}
+    return_dict: dict[int, dict[str, str]] = {}
     try:
         response = db_cursor.execute('''SELECT * FROM entries''')
     except sqlite3.Error as get_entries_error:
@@ -129,35 +129,35 @@ def get_entries_dict(db_cursor: sqlite3.Cursor) -> dict:
             f'A database access error has occurred while getting entry data for dictionary storage: {get_entries_error}')
 
     for row in response:
-        return_dict[int(row[0])] = labelled_info_dict(row[1:])
+        return_dict[int(row[0])] = _get_labelled_info(row[1:])
 
     return return_dict
 
 
-def labelled_info_dict(res_tuple: tuple) -> dict:
+def _get_labelled_info(res_tuple: tuple) -> dict[str, str]:
     """Create the dictionary that each id gets mapped to"""
-    return_dict = {}
+    return_dict: dict[str, str] = {}
 
-    return_dict[' Prefix'] = res_tuple[0]
-    return_dict[' First Name'] = res_tuple[1]
-    return_dict[' Last Name'] = res_tuple[2]
-    return_dict[' Title'] = res_tuple[3]
-    return_dict[' Organization Name'] = res_tuple[4]
-    return_dict[' Email'] = res_tuple[5]
-    return_dict[' Organization Website'] = res_tuple[6]
-    return_dict[' Phone Number'] = res_tuple[7]
-    return_dict[' Course Project'] = res_tuple[8]
-    return_dict[' Guest Speaker'] = res_tuple[9]
-    return_dict[' Site Visit'] = res_tuple[10]
-    return_dict[' Job Shadow'] = res_tuple[11]
-    return_dict[' Internships'] = res_tuple[12]
-    return_dict[' Career Panel'] = res_tuple[13]
-    return_dict[' Networking Event'] = res_tuple[14]
-    return_dict[' Summer 2022'] = res_tuple[15]
-    return_dict[' Fall 2022'] = res_tuple[16]
-    return_dict[' Spring 2023'] = res_tuple[17]
-    return_dict[' Summer 2023'] = res_tuple[18]
-    return_dict[' Other Timeframe'] = res_tuple[19]
+    return_dict['Prefix'] = res_tuple[0]
+    return_dict['First Name'] = res_tuple[1]
+    return_dict['Last Name'] = res_tuple[2]
+    return_dict['Title'] = res_tuple[3]
+    return_dict['Organization Name'] = res_tuple[4]
+    return_dict['Email'] = res_tuple[5]
+    return_dict['Organization Website'] = res_tuple[6]
+    return_dict['Phone Number'] = res_tuple[7]
+    return_dict['Course Project'] = res_tuple[8]
+    return_dict['Guest Speaker'] = res_tuple[9]
+    return_dict['Site Visit'] = res_tuple[10]
+    return_dict['Job Shadow'] = res_tuple[11]
+    return_dict['Internships'] = res_tuple[12]
+    return_dict['Career Panel'] = res_tuple[13]
+    return_dict['Networking Event'] = res_tuple[14]
+    return_dict['Summer 2022'] = res_tuple[15]
+    return_dict['Fall 2022'] = res_tuple[16]
+    return_dict['Spring 2023'] = res_tuple[17]
+    return_dict['Summer 2023'] = res_tuple[18]
+    return_dict['Other Timeframe'] = res_tuple[19]
     return_dict['Do we have your permission to use your organization\'s name?'] = res_tuple[20]
 
     return return_dict

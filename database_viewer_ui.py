@@ -3,160 +3,159 @@ import PySide6.QtWidgets as QW
 from PySide6.QtCore import QMetaObject, Qt, Slot
 import db_utils as db
 
+try:
+    DB_CONNECTION = sqlite3.connect('form_entries.db')
+    DB_CURSOR = DB_CONNECTION.cursor()
+    TAGGED_ENTRIES: dict[int, dict[str, str]] = db.get_tagged_dict(DB_CURSOR)
+    BUTTON_STRINGS: list[str] = db.get_button_data(DB_CURSOR)
+except sqlite3.Error as db_connect_error:
+    print(f'A gui database error has occurred: {db_connect_error}')
+
 
 class database_viewer(QW.QWidget):
-    def __init__(self, MainWindow):
+    def __init__(self, main_window: QW.QMainWindow) -> None:
         QW.QWidget.__init__(self)
-        self.MainWindow = MainWindow
-        self.MainWindow.resize(1280, 720)
+        main_window.resize(1280, 720)
 
-        self.outerWidget = QW.QWidget()
-        self.outerLayout = QW.QHBoxLayout()
+        # setup main conatiner widget
+        self.outer_widget = QW.QWidget()
+        self.outer_layout = QW.QHBoxLayout()
 
-        # set up the widgets and layouts we will need
-        self.scrollArea = QW.QScrollArea()
-        self.leftWidget = QW.QWidget()
-        self.leftLayout = QW.QVBoxLayout()
-        self.scrollLayout = QW.QVBoxLayout()
-        self.scrollArea.setVerticalScrollBarPolicy(
+        # setup left widget that will hold buttons
+        self.scroll_area = QW.QScrollArea()
+        self.left_widget = QW.QWidget()
+        self.left_layout = QW.QVBoxLayout()
+        self.scroll_layout = QW.QVBoxLayout()
+        self.scroll_area.setVerticalScrollBarPolicy(
             Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.scrollArea.setWidgetResizable(True)
+        self.scroll_area.setWidgetResizable(True)
 
-        self.rightWidget = QW.QWidget()
-        self.rightLayout = QW.QGridLayout()
-        self.rightLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.rightLayout.setVerticalSpacing(15)
+        for string in BUTTON_STRINGS:
+            self._add_button(string)
 
-        # set up the database connections and get the labelled dictionary
-        try:
-            db_connection = sqlite3.connect('form_entries.db')
-            db_cursor = db_connection.cursor()
-            self.labelled_entries_dict = db.get_entries_dict(db_cursor)
-        except sqlite3.Error as db_connect_error:
-            print(f'A gui database error has occurred: {db_connect_error}')
+        # finalize left widget and layout
+        self.left_widget.setLayout(self.left_layout)
+        self.scroll_area.setWidget(self.left_widget)
+        self.scroll_layout.addWidget(self.scroll_area)
 
-        # try to get list of data for short version of entries
-        self.entries: list = db.get_minimal_data(db_cursor)
-        for entry in self.entries:
-            self.addListItem(entry)
+        # setup right widget that will house the entry information
+        self.right_widget = QW.QWidget()
+        self.right_layout = QW.QGridLayout()
+        self.right_container = QW.QVBoxLayout()
+        self.right_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.right_layout.setVerticalSpacing(15)
 
-        self.leftWidget.setLayout(self.leftLayout)
-        self.scrollArea.setWidget(self.leftWidget)
-        self.scrollLayout.addWidget(self.scrollArea)
-        self.outerLayout.addLayout(self.scrollLayout)
+        # finalize right widget and layout
+        self.right_widget.setLayout(self.right_layout)
+        self.right_widget.setEnabled(False)
+        self.right_container.addWidget(self.right_widget)
 
-        # self.show_data(id=1, labelled_entries_dict=self.labelled_entries_dict)
-        self.outerLayout.addLayout(self.rightLayout)
+        # finalize outer widget and layout
+        self.outer_layout.addLayout(self.scroll_layout)
+        self.outer_layout.addLayout(self.right_container)
+        self.outer_widget.setLayout(self.outer_layout)
 
-        self.outerWidget.setLayout(self.outerLayout)
+        # tell the app to use outer_widget as the main widget
+        main_window.setCentralWidget(self.outer_widget)
+        QMetaObject.connectSlotsByName(main_window)
 
-        self.MainWindow.setCentralWidget(self.outerWidget)
-        QMetaObject.connectSlotsByName(self.MainWindow)
-
-    def addListItem(self, entry):
-        """Add buttons to the main page list based on database entries"""
+    def _add_button(self, string: str) -> None:
+        """Add buttons to the left layout list based on database entries"""
         # code help from https://stackoverflow.com/questions/60250842/how-to-create-dynamic-buttons-in-pyqt5 (buttons)
-        pushButton = QW.QPushButton(
-            parent=self, text=entry)
-        pushButton.setObjectName(entry)
-        self.leftLayout.addWidget(pushButton)
-
-        pushButton.clicked.connect(self.click_handler)
+        push_button = QW.QPushButton(string)
+        push_button.setObjectName(string)
+        self.left_layout.addWidget(push_button)
+        push_button.clicked.connect(self._click_handler)
 
     @Slot()
-    def click_handler(self):
-        """Handle button clicks on main page"""
-        dict = self.labelled_entries_dict
+    def _click_handler(self) -> None:
+        """handle button clicks on left layout"""
         button = self.sender()
-        number = button.objectName()
+        button_string = button.objectName()
 
-        count = 0
-        for char in number:
+        char_counter = 0
+        for char in button_string:
             if char == '.':
                 break
-            count += 1
-        number = number[:count]
+            char_counter += 1
+        id_number: int = int(button_string[:char_counter])
 
-        self.show_data(id=int(number), labelled_entries_dict=dict)
+        self._show_entry_data(id_number)
 
-    def show_data(self, id, labelled_entries_dict):
-        new_dict = {k: v for k, v in labelled_entries_dict.items()}
-        new_dict = self.first_rows(
-            new_dict, id, row=1, stop=' Organization Name')
-        new_dict = self.first_rows(new_dict, id, row=4, stop=' Course Project')
+    def _show_entry_data(self, id: int) -> None:
+        """click handler calls this to populate the data fields in right_layout"""
+        display__instance: dict[int, dict[str, str]] = {
+            k: v for k, v in TAGGED_ENTRIES.items()}
 
-        self.rightLayout.addItem(QW.QSpacerItem(0, 30), 3, 0, 1, 8)
+        display__instance = self._first_rows(
+            display__instance, id, 1, 'Organization Name')
 
-        count = 0
-        while True:
-            try:
-                self.widge = self.rightLayout.itemAt(count).widget()
-                if type(self.widge) == QW.QLineEdit:
-                    self.widge.setEnabled(False)
-                count += 1
-            except AttributeError:
+        self.right_layout.addItem(QW.QSpacerItem(0, 30), 3, 0, 1, 8)
+
+        display__instance = self._first_rows(
+            display__instance, id, 4, 'Course Project')
+
+        self.right_layout.addItem(QW.QSpacerItem(0, 30), 7, 0, 1, 8)
+
+        display__instance = self._check_boxes(
+            display__instance, id, 0, 'Summer 2022')
+
+        display__instance = self._check_boxes(
+            display__instance, id, 4, 'Do we have your permission to use your organization\'s name?')
+
+        self.right_layout.addItem(QW.QSpacerItem(0, 30), 16, 0, 1, 8)
+
+        # handle the final data point
+        for label, info in display__instance[id].items():
+            self.right_layout.addWidget(QW.QLabel(label), 17, 0, 1, 4)
+            self.right_layout.addWidget(QW.QLineEdit(info), 17, 4, 1, 4)
+
+    def _first_rows(self, display__instance: dict[int, dict[str, str]], id: int,
+                    row: int, stop_on: str) -> dict[int, dict[str, str]]:
+        """handle the personal information placement"""
+        col_counter = -1
+        removal_list = []
+        for label, info in display__instance[id].items():
+            if label == stop_on:
                 break
-
-        self.rightLayout.addItem(QW.QSpacerItem(0, 30), 7, 0, 1, 8)
-        new_dict = self.check_boxes(new_dict, id, col=0, stop=' Summer 2022')
-        new_dict = self.check_boxes(
-            new_dict, id, col=4, stop='Do we have your permission to use your organization\'s name?')
-        count += 2
-        while True:
-            try:
-                self.widge = self.rightLayout.itemAt(count).widget()
-                self.widge.setEnabled(False)
-                count += 1
-            except AttributeError:
-                break
-
-        self.rightLayout.addItem(QW.QSpacerItem(0, 30), 16, 0, 1, 8)
-        for label, info in new_dict[id].items():
-            self.rightLayout.addWidget(QW.QLabel(text=label), 17, 0, 1, 4)
-            answer = QW.QLineEdit(info)
-            answer.setEnabled(False)
-            self.rightLayout.addWidget(answer, 17, 4, 1, 4)
-
-    def first_rows(self, new_dict, id, row, stop):
-        count = -1
-        remove_list = []
-        for label, info in new_dict[id].items():
-            if label == stop:
-                break
-            remove_list.append(label)
-            count += 1
-            self.rightLayout.addWidget(QW.QLabel(label), row + 1, count)
+            removal_list.append(label)
+            col_counter += 1
+            self.right_layout.addWidget(
+                QW.QLabel(' ' + label), row + 1, col_counter)
             if info is not None:
-                count += 1
-                self.rightLayout.addWidget(QW.QLineEdit(info), row, count - 1)
+                col_counter += 1
+                self.right_layout.addWidget(
+                    QW.QLineEdit(info), row, col_counter - 1)
             else:
-                count += 1
-                self.rightLayout.addWidget(
-                    QW.QLineEdit(''), row, count - 1)
-        new_dict[id] = {
-            key:  val for key, val in new_dict[id].items() if key not in remove_list}
-        return new_dict
+                col_counter += 1
+                self.right_layout.addWidget(
+                    QW.QLineEdit(''), row, col_counter - 1)
+        display__instance[id] = {key:  val for key, val
+                                 in display__instance[id].items() if key not in removal_list}
+        return display__instance
 
-    def check_boxes(self, new_dict, id, col, stop):
-        count = 8
-        remove_list = []
+    def _check_boxes(self, display__instance: dict[int, dict[str, str]], id: int,
+                     col: int, stop_on: str) -> dict[int, dict[str, str]]:
+        """handle the check box placement"""
+        row_counter = 8
+        removal_list = []
         if col == 0:
-            self.rightLayout.addWidget(
-                QW.QLabel(text='Collaborative Opportunities:'), count, col)
+            self.right_layout.addWidget(
+                QW.QLabel(text='Collaborative Opportunities:'), row_counter, col)
         elif col == 4:
-            self.rightLayout.addWidget(
-                QW.QLabel(text='Time Frame:'), count, col)
-        count += 1
-        for label, info in new_dict[id].items():
-            if label == stop:
+            self.right_layout.addWidget(
+                QW.QLabel(text='Time Frame:'), row_counter, col)
+        row_counter += 1
+        for label, info in display__instance[id].items():
+            if label == stop_on:
                 break
-            remove_list.append(label)
-            newBox = QW.QCheckBox(text=label)
+            removal_list.append(label)
+            new_box = QW.QCheckBox(label)
             if info is not None:
-                newBox.setChecked(True)
-            self.rightLayout.addWidget(newBox, count, col)
-            count += 1
+                new_box.setChecked(True)
+            self.right_layout.addWidget(new_box, row_counter, col)
+            row_counter += 1
 
-        new_dict[id] = {
-            key:  val for key, val in new_dict[id].items() if key not in remove_list}
-        return new_dict
+        display__instance[id] = {key:  val for key, val
+                                 in display__instance[id].items() if key not in removal_list}
+        return display__instance

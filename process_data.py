@@ -15,18 +15,18 @@ def process(json_object: dict[str, list[dict[str, str]]], db_cursor: sqlite3.Cur
     testing_dict = {}
     testing_counter = 1
 
-    text_file_creation(list_of_entries)
+    _text_file_creation(list_of_entries)
     print('Data written to file')
 
     for entry in list_of_entries:
         # personal information
-        non_required_check(entry['Field1'], individual_entry_list)
+        _non_required_check(entry['Field1'], individual_entry_list)
         individual_entry_list.append(entry['Field2'])
         individual_entry_list.append(entry['Field3'])
         individual_entry_list.append(entry['Field4'])
         individual_entry_list.append(entry['Field5'])
-        non_required_check(entry['Field6'], individual_entry_list)
-        non_required_check(entry['Field7'], individual_entry_list)
+        _non_required_check(entry['Field6'], individual_entry_list)
+        _non_required_check(entry['Field7'], individual_entry_list)
 
         # format phone number
         if entry['Field9'] != '':
@@ -36,20 +36,20 @@ def process(json_object: dict[str, list[dict[str, str]]], db_cursor: sqlite3.Cur
             individual_entry_list.append(None)
 
         # what collaborations they are interested in
-        check_box_check(entry['Field11'], individual_entry_list)
-        check_box_check(entry['Field12'], individual_entry_list)
-        check_box_check(entry['Field13'], individual_entry_list)
-        check_box_check(entry['Field14'], individual_entry_list)
-        check_box_check(entry['Field15'], individual_entry_list)
-        check_box_check(entry['Field16'], individual_entry_list)
-        check_box_check(entry['Field17'], individual_entry_list)
+        _check_box_check(entry['Field11'], individual_entry_list)
+        _check_box_check(entry['Field12'], individual_entry_list)
+        _check_box_check(entry['Field13'], individual_entry_list)
+        _check_box_check(entry['Field14'], individual_entry_list)
+        _check_box_check(entry['Field15'], individual_entry_list)
+        _check_box_check(entry['Field16'], individual_entry_list)
+        _check_box_check(entry['Field17'], individual_entry_list)
 
         # what timeframe they are interested in
-        check_box_check(entry['Field111'], individual_entry_list)
-        check_box_check(entry['Field112'], individual_entry_list)
-        check_box_check(entry['Field113'], individual_entry_list)
-        check_box_check(entry['Field114'], individual_entry_list)
-        check_box_check(entry['Field115'], individual_entry_list)
+        _check_box_check(entry['Field111'], individual_entry_list)
+        _check_box_check(entry['Field112'], individual_entry_list)
+        _check_box_check(entry['Field113'], individual_entry_list)
+        _check_box_check(entry['Field114'], individual_entry_list)
+        _check_box_check(entry['Field115'], individual_entry_list)
 
         individual_entry_list.append(entry['Field211'])
 
@@ -68,7 +68,7 @@ def process(json_object: dict[str, list[dict[str, str]]], db_cursor: sqlite3.Cur
         return testing_dict
 
 
-def non_required_check(answer: str, individual_entry_list: list) -> None:
+def _non_required_check(answer: str, individual_entry_list: list) -> None:
     """Takes the non-required fields and either passes the value or None (null)"""
     if answer != '':
         individual_entry_list.append(answer)
@@ -76,7 +76,7 @@ def non_required_check(answer: str, individual_entry_list: list) -> None:
         individual_entry_list.append(None)
 
 
-def check_box_check(answer: str, individual_entry_list: list) -> None:
+def _check_box_check(answer: str, individual_entry_list: list) -> None:
     """Takes the collaboration and timeframe choice fields and either passes yes or None (null)"""
     if answer != '':
         individual_entry_list.append('yes')
@@ -84,14 +84,14 @@ def check_box_check(answer: str, individual_entry_list: list) -> None:
         individual_entry_list.append(None)
 
 
-def write_data_to_file(str: str, fileIO) -> None:
+def _write_data_to_file(str: str, fileIO) -> None:
     """Takes a string from text_file_creation and writes to the file"""
     if str == '':
         return
     fileIO.write(str + '\n')
 
 
-def text_file_creation(list_of_entries: list) -> None:
+def _text_file_creation(list_of_entries: list) -> None:
     """Takes the list of entries directly and provides a format to write to the file"""
     number_of_entries = len(list_of_entries)
     writing_counter = 0
@@ -101,8 +101,8 @@ def text_file_creation(list_of_entries: list) -> None:
         for entry in list_of_entries:
             writing_counter += 1
             for k, v in entry.items():
-                write_data_to_file(f"{k}: {v}", fileIO)
+                _write_data_to_file(f"{k}: {v}", fileIO)
             if number_of_entries != writing_counter:
-                write_data_to_file('\n', fileIO)
-                write_data_to_file('~~'*24, fileIO)
-                write_data_to_file('\n', fileIO)
+                _write_data_to_file('\n', fileIO)
+                _write_data_to_file('~~'*24, fileIO)
+                _write_data_to_file('\n', fileIO)
