@@ -90,6 +90,13 @@ class database_viewer(QW.QWidget):
         display__instance: dict[int, dict[str, str]] = {
             k: v for k, v in self.tagged_entries.items()}
 
+        while self.right_layout.count():
+            child = self.right_layout.takeAt(0)
+            if child.widget() is not None:
+                self.right_layout.removeWidget(child.widget())
+            else:
+                self.right_layout.removeItem(child)
+
         display__instance = self._first_rows(
             display__instance, id, 1, 'Organization Name')
 
@@ -125,14 +132,10 @@ class database_viewer(QW.QWidget):
             col_counter += 1
             self.right_layout.addWidget(
                 QW.QLabel(' ' + label), row + 1, col_counter)
-            if info is not None:
-                col_counter += 1
-                self.right_layout.addWidget(
-                    QW.QLineEdit(info), row, col_counter - 1)
-            else:
-                col_counter += 1
-                self.right_layout.addWidget(
-                    QW.QLineEdit(''), row, col_counter - 1)
+            col_counter += 1
+            self.right_layout.addWidget(
+                QW.QLineEdit(info), row, col_counter - 1)
+
         display__instance[id] = {key:  val for key, val
                                  in display__instance[id].items() if key not in removal_list}
         return display__instance

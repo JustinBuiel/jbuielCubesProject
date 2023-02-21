@@ -2,12 +2,11 @@ import db_utils as db
 from gather_data import get_json_data
 from process_data import process
 from database_viewer_ui import database_viewer
-# import sqlite3
 import PySide6.QtWidgets as QtWidgets
 
 DB_NAME = "data_testing.db"
 TABLE_NAME = "test_table"
-ID_TO_TEST = 5
+IDS_TO_TEST = [5, 1, 3, 12, 1]
 JSON_TEST = get_json_data()
 
 
@@ -68,41 +67,43 @@ def test_gui_info():
     QtWidgets.QApplication([])
     main_window = QtWidgets.QMainWindow()
     ui = database_viewer(main_window, DB_NAME, TABLE_NAME)
-    ui.show_entry_data(ID_TO_TEST)
 
-    response = ui.right_layout.itemAt(3).widget()
-    assert response.text() == tagged_entries[ID_TO_TEST]['First Name']
+    for ID in IDS_TO_TEST:
+        ui.show_entry_data(ID)
 
-    response = ui.right_layout.itemAt(5).widget()
-    assert response.text() == tagged_entries[ID_TO_TEST]['Last Name']
+        response = ui.right_layout.itemAt(3).widget()
+        assert response.text() == tagged_entries[ID]['First Name']
 
-    response = ui.right_layout.itemAt(12).widget()
-    assert response.text() == tagged_entries[ID_TO_TEST]['Email']
+        response = ui.right_layout.itemAt(5).widget()
+        assert response.text() == tagged_entries[ID]['Last Name']
 
-    response = ui.right_layout.itemAt(14).widget()
-    assert response.text(
-    ) == tagged_entries[ID_TO_TEST]['Organization Website']
+        response = ui.right_layout.itemAt(12).widget()
+        assert response.text() == tagged_entries[ID]['Email']
 
-    response = ui.right_layout.itemAt(19).widget()
-    if tagged_entries[ID_TO_TEST]['Course Project'] == 'yes':
-        assert response.isChecked() is True
-    else:
-        assert response.isChecked() is False
+        response = ui.right_layout.itemAt(14).widget()
+        assert response.text(
+        ) == tagged_entries[ID]['Organization Website']
 
-    response = ui.right_layout.itemAt(20).widget()
-    if tagged_entries[ID_TO_TEST]['Guest Speaker'] == 'yes':
-        assert response.isChecked() is True
-    else:
-        assert response.isChecked() is False
+        response = ui.right_layout.itemAt(19).widget()
+        if tagged_entries[ID]['Course Project'] == 'yes':
+            assert response.isChecked() is True
+        else:
+            assert response.isChecked() is False
 
-    response = ui.right_layout.itemAt(23).widget()
-    if tagged_entries[ID_TO_TEST]['Internships'] == 'yes':
-        assert response.isChecked() is True
-    else:
-        assert response.isChecked() is False
+        response = ui.right_layout.itemAt(20).widget()
+        if tagged_entries[ID]['Guest Speaker'] == 'yes':
+            assert response.isChecked() is True
+        else:
+            assert response.isChecked() is False
 
-    response = ui.right_layout.itemAt(30).widget()
-    if tagged_entries[ID_TO_TEST]['Summer 2023'] == 'yes':
-        assert response.isChecked() is True
-    else:
-        assert response.isChecked() is False
+        response = ui.right_layout.itemAt(23).widget()
+        if tagged_entries[ID]['Internships'] == 'yes':
+            assert response.isChecked() is True
+        else:
+            assert response.isChecked() is False
+
+        response = ui.right_layout.itemAt(30).widget()
+        if tagged_entries[ID]['Summer 2023'] == 'yes':
+            assert response.isChecked() is True
+        else:
+            assert response.isChecked() is False

@@ -73,7 +73,7 @@ def _non_required_check(answer: str, individual_entry_list: list) -> None:
     if answer != '':
         individual_entry_list.append(answer)
     else:
-        individual_entry_list.append(None)
+        individual_entry_list.append('')
 
 
 def _check_box_check(answer: str, individual_entry_list: list) -> None:
