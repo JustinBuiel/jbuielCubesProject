@@ -2,7 +2,7 @@
 This is the main driver module that handles the interactions between the other modules
 """
 
-import PySide6.QtWidgets as QtWidgets
+import PySide6.QtWidgets as QW
 import db_utils as db
 from database_viewer_ui import database_viewer
 from gather_data import get_json_data
@@ -27,15 +27,14 @@ def main():  # comment to test workflow
 
 
 if __name__ == "__main__":
-    main()
-    app = QtWidgets.QApplication([])
-    app_palette = app.palette()
-    app_paltete = set(app_palette)
-    app.setPalette(app_palette)
-    app.setStyle('Fusion')
+    # main()
+    app = QW.QApplication([])
+    set(app)
 
-    main_window = QtWidgets.QMainWindow()
+    main_window = QW.QMainWindow()
+    main_window.setWindowTitle("Database Visualizer")
     ui = database_viewer(main_window, DB_NAME, TABLE_NAME)
     main_window.show()
     print('Running UI')
+
     app.exec()

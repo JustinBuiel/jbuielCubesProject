@@ -1,24 +1,23 @@
-from PySide6.QtGui import QPalette, QColor
-from PySide6.QtCore import Qt
+from PySide6.QtGui import QPalette, QColor, QFont
+import PySide6.QtWidgets as QW
+
+BLACK = QColor(30, 27, 24)
+WHITE = QColor(255, 255, 255)
+BLUE = QColor(20, 20, 125)
 
 
-def set(app_palette):
+def set(app: QW.QApplication):
+    app_palette = app.palette()
+    font = QFont()
+    font.setFamilies("Inter")
+    font.setPointSize(11)
+    app.setFont(font)
+    app_palette.setColor(QPalette.ColorRole.Window, BLACK)
+    app_palette.setColor(QPalette.ColorRole.Base, BLUE)
+    app_palette.setColor(QPalette.ColorRole.Button, BLUE)
+    app_palette.setColor(QPalette.ColorRole.WindowText, WHITE)
+    app_palette.setColor(QPalette.ColorRole.Text, WHITE)
+    app_palette.setColor(QPalette.ColorRole.ButtonText, WHITE)
 
-    app_palette.setColor(QPalette.ColorRole.Window, QColor(53, 53, 53))
-    app_palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
-    app_palette.setColor(QPalette.ColorRole.Base, QColor(42, 42, 42))
-    app_palette.setColor(QPalette.ColorRole.ToolTipBase, Qt.GlobalColor.white)
-    app_palette.setColor(QPalette.ColorRole.ToolTipText, Qt.GlobalColor.white)
-    app_palette.setColor(QPalette.ColorRole.Dark, QColor(35, 35, 35))
-    app_palette.setColor(QPalette.ColorRole.Shadow, QColor(20, 20, 20))
-    app_palette.setColor(QPalette.ColorRole.AlternateBase, QColor(53, 53, 53))
-    app_palette.setColor(QPalette.ColorRole.ToolTipBase, Qt.GlobalColor.black)
-    app_palette.setColor(QPalette.ColorRole.ToolTipText, Qt.GlobalColor.white)
-    app_palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
-    app_palette.setColor(QPalette.ColorRole.Button, QColor(53, 53, 53))
-    app_palette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.white)
-    app_palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
-    app_palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-    app_palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-    app_palette.setColor(QPalette.ColorRole.HighlightedText,
-                         QColor(127, 127, 127))
+    app.setPalette(app_palette)
+    app.setStyle('Fusion')

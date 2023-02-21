@@ -2,6 +2,7 @@ import sqlite3
 import PySide6.QtWidgets as QW
 from PySide6.QtCore import QMetaObject, Qt, Slot
 import db_utils as db
+import time
 
 
 class database_viewer(QW.QWidget):
@@ -26,6 +27,7 @@ class database_viewer(QW.QWidget):
 
         # setup left widget that will hold buttons
         self.scroll_area = QW.QScrollArea()
+        self.scroll_area.setFrameShape(QW.QFrame.Shape.NoFrame)
         self.left_widget = QW.QWidget()
         self.left_layout = QW.QVBoxLayout()
         self.scroll_layout = QW.QVBoxLayout()
@@ -73,6 +75,9 @@ class database_viewer(QW.QWidget):
     @Slot()
     def _click_handler(self) -> None:
         """handle button clicks on left layout"""
+        self.left_widget.setEnabled(False)
+        time.sleep(.1)
+
         button = self.sender()
         button_string = button.objectName()
 
@@ -85,6 +90,7 @@ class database_viewer(QW.QWidget):
 
         self.show_entry_data(id_number)
 
+    # clear layout so we aren't stacking on top of old data
     def show_entry_data(self, id: int) -> None:
         """click handler calls this to populate the data fields in right_layout"""
         display__instance: dict[int, dict[str, str]] = {
@@ -94,6 +100,7 @@ class database_viewer(QW.QWidget):
             child = self.right_layout.takeAt(0)
             if child.widget() is not None:
                 self.right_layout.removeWidget(child.widget())
+                child.widget().deleteLater()
             else:
                 self.right_layout.removeItem(child)
 
@@ -119,6 +126,9 @@ class database_viewer(QW.QWidget):
         for label, info in display__instance[id].items():
             self.right_layout.addWidget(QW.QLabel(label), 17, 0, 1, 4)
             self.right_layout.addWidget(QW.QLineEdit(info), 17, 4, 1, 4)
+
+        time.sleep(.1)
+        self.left_widget.setEnabled(True)
 
     def _first_rows(self, display__instance: dict[int, dict[str, str]], id: int,
                     row: int, stop_on: str) -> dict[int, dict[str, str]]:

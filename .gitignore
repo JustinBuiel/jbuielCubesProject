@@ -4,3 +4,4 @@ __pycache__
 .venv
 *.db
 form_entries.txt
+.pytest_cache

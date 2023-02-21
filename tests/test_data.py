@@ -18,92 +18,93 @@ def test_api_data_amount():
 
 def test_entry_in_database():
     # test 2 sprint 2
-    DB_CONNECTION, DB_CURSOR = db.set_up_database(DB_NAME, TABLE_NAME)
-    RAW_ENTRIES = process(JSON_TEST, DB_CURSOR, TABLE_NAME, True)
-    response = DB_CURSOR.execute(f'''SELECT * FROM {TABLE_NAME}''')
+    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAME)
+    raw_entries: dict[str, str] = process(
+        JSON_TEST, db_cursor, TABLE_NAME, True)
+    response = db_cursor.execute(f'''SELECT * FROM {TABLE_NAME}''')
     counter = 1
     for row in response:
-        assert RAW_ENTRIES[counter] == row
+        assert raw_entries[counter] == row
         counter += 1
 
-    db.shutdown_database(DB_CONNECTION)
+    db.shutdown_database(db_connection)
 
 
 def test_data_in_table():
     # test 3 sprint 3
-    DB_CONNECTION, DB_CURSOR = db.set_up_database(DB_NAME, TABLE_NAME)
-    RAW_ENTRIES = process(JSON_TEST, DB_CURSOR, TABLE_NAME, True)
+    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAME)
+    raw_entries = process(JSON_TEST, db_cursor, TABLE_NAME, True)
 
-    DB_CURSOR.execute(f'''SELECT * FROM {TABLE_NAME}''')
-    results = DB_CURSOR.fetchall()
+    db_cursor.execute(f'''SELECT * FROM {TABLE_NAME}''')
+    results = db_cursor.fetchall()
     if len(results) > 0:
         assert True
-        assert len(RAW_ENTRIES) == len(results)
+        assert len(raw_entries) == len(results)
     else:
         assert False
 
-    db.shutdown_database(DB_CONNECTION)
+    db.shutdown_database(db_connection)
 
-    DB_CONNECTION, DB_CURSOR = db.set_up_database(DB_NAME, TABLE_NAME)
+    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAME)
 
-    DB_CURSOR.execute(f'''SELECT * FROM {TABLE_NAME}''')
-    results = DB_CURSOR.fetchall()
+    db_cursor.execute(f'''SELECT * FROM {TABLE_NAME}''')
+    results = db_cursor.fetchall()
     # no data inserted so there shouldn't be any responses
     if len(results) == 0:
         assert True
     else:
         assert False
 
-    db.shutdown_database(DB_CONNECTION)
+    db.shutdown_database(db_connection)
 
 
 def test_gui_info():
     # test 4 sprint 3
-    DB_CONNECTION, DB_CURSOR = db.set_up_database(DB_NAME, TABLE_NAME)
-    process(JSON_TEST, DB_CURSOR, TABLE_NAME, False)
-    tagged_entries = db.get_tagged_dict(DB_CURSOR, TABLE_NAME)
-    db.shutdown_database(DB_CONNECTION)
+    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAME)
+    process(JSON_TEST, db_cursor, TABLE_NAME, False)
+    tagged_entries = db.get_tagged_dict(db_cursor, TABLE_NAME)
+    db.shutdown_database(db_connection)
 
     QtWidgets.QApplication([])
     main_window = QtWidgets.QMainWindow()
     ui = database_viewer(main_window, DB_NAME, TABLE_NAME)
 
-    for ID in IDS_TO_TEST:
-        ui.show_entry_data(ID)
+    for id in IDS_TO_TEST:
+        ui.show_entry_data(id)
 
         response = ui.right_layout.itemAt(3).widget()
-        assert response.text() == tagged_entries[ID]['First Name']
+        assert response.text() == tagged_entries[id]['First Name']
 
         response = ui.right_layout.itemAt(5).widget()
-        assert response.text() == tagged_entries[ID]['Last Name']
+        assert response.text() == tagged_entries[id]['Last Name']
 
         response = ui.right_layout.itemAt(12).widget()
-        assert response.text() == tagged_entries[ID]['Email']
+        assert response.text() == tagged_entries[id]['Email']
 
         response = ui.right_layout.itemAt(14).widget()
         assert response.text(
-        ) == tagged_entries[ID]['Organization Website']
+        ) == tagged_entries[id]['Organization Website']
 
         response = ui.right_layout.itemAt(19).widget()
-        if tagged_entries[ID]['Course Project'] == 'yes':
+        if tagged_entries[id]['Course Project'] == 'yes':
             assert response.isChecked() is True
         else:
             assert response.isChecked() is False
 
         response = ui.right_layout.itemAt(20).widget()
-        if tagged_entries[ID]['Guest Speaker'] == 'yes':
+        if tagged_entries[id]['Guest Speaker'] == 'yes':
             assert response.isChecked() is True
         else:
             assert response.isChecked() is False
 
         response = ui.right_layout.itemAt(23).widget()
-        if tagged_entries[ID]['Internships'] == 'yes':
+        if tagged_entries[id]['Internships'] == 'yes':
             assert response.isChecked() is True
         else:
             assert response.isChecked() is False
 
         response = ui.right_layout.itemAt(30).widget()
-        if tagged_entries[ID]['Summer 2023'] == 'yes':
+        if tagged_entries[id]['Summer 2023'] == 'yes':
             assert response.isChecked() is True
         else:
             assert response.isChecked() is False
