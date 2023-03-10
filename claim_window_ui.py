@@ -95,7 +95,7 @@ class claim_window(QW.QMainWindow):
         self.text_boxes.addWidget(self.email)
 
     def full_info(self, user_data: list):
-
+        user_email = self.email.text()
         self.clear_layout()
 
         self.labels.addWidget(QW.QLabel(text="First Name"))
@@ -121,6 +121,8 @@ class claim_window(QW.QMainWindow):
             self.title.setText(user_data[2])
             self.email.setText(user_data[3])
             self.dept.setText(user_data[4])
+        else:
+            self.email.setText(user_email)
 
         claim_button = QW.QPushButton(text="Claim Project")
         self.central_layout.addWidget(claim_button)
