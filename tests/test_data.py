@@ -1,5 +1,5 @@
 import db_utils as db
-from gather_data import get_json_data
+from gather_data import get_json_data, update_data
 from process_data import process
 from database_viewer_ui import database_viewer
 import PySide6.QtWidgets as QtWidgets
@@ -67,6 +67,7 @@ def test_gui_info():
     db.shutdown_database(db_connection)
 
     QtWidgets.QApplication([])
+    update_data
     ui = database_viewer(DB_NAME, ENTRY_TABLE)
 
     for id in IDS_TO_TEST:
