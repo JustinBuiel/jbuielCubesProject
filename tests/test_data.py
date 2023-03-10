@@ -68,7 +68,7 @@ def test_gui_info():
 
     QtWidgets.QApplication([])
     update_data
-    ui = database_viewer(DB_NAME, ENTRY_TABLE)
+    ui = database_viewer(DB_NAME, TABLE_NAMES)
 
     for id in IDS_TO_TEST:
         ui.show_entry_data(id)
