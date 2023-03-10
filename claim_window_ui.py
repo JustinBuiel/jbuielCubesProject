@@ -3,14 +3,13 @@ import sqlite3
 import PySide6.QtWidgets as QW
 from PySide6.QtCore import Slot, QMetaObject
 import db_utils as db
-from gather_data import DB_NAME, TABLE_NAMES
-
-ENTRY_TABLE, USER_TABLE, CLAIM_TABLE = TABLE_NAMES
 
 
 class claim_window(QW.QMainWindow):
-    def __init__(self, id):
+    def __init__(self, id, DB_NAME, TABLE_NAMES):
         super().__init__()
+        self.DB_NAME = DB_NAME
+        self.ENTRY_TABLE, self.USER_TABLE, self.CLAIM_TABLE = TABLE_NAMES
         self.resize(1280, 720)
         self.id = id
 
@@ -40,16 +39,16 @@ class claim_window(QW.QMainWindow):
         user = self.email.text()
         response = None
         try:
-            db_connection = sqlite3.connect(DB_NAME)
+            db_connection = sqlite3.connect(self.DB_NAME)
             db_cursor = db_connection.cursor()
-            db_cursor.execute(f'''SELECT email FROM {USER_TABLE}''')
+            db_cursor.execute(f'''SELECT email FROM {self.USER_TABLE}''')
             results = db_cursor.fetchall()
 
             for row in results:
                 if user == row[0]:
                     self.exists = True
                     db_cursor.execute(
-                        f'''SELECT * FROM {USER_TABLE} WHERE email like \'{user}\' ''')
+                        f'''SELECT * FROM {self.USER_TABLE} WHERE email like \'{user}\' ''')
                     response: list = db_cursor.fetchall()
                     response: tuple = response[0]
 
@@ -75,20 +74,20 @@ class claim_window(QW.QMainWindow):
         user_info.append(self.dept.text())
 
         if not self.exists:
-            db.create_user(DB_NAME, USER_TABLE, tuple(user_info))
+            db.create_user(self.DB_NAME, self.USER_TABLE, tuple(user_info))
 
         try:
-            db_connection = sqlite3.connect(DB_NAME)
+            db_connection = sqlite3.connect(self.DB_NAME)
             db_cursor = db_connection.cursor()
             db_cursor.execute(
-                f'''SELECT userID FROM {USER_TABLE} WHERE email like \'{self.email.text()}\' ''')
+                f'''SELECT userID FROM {self.USER_TABLE} WHERE email like \'{self.email.text()}\' ''')
             response = db_cursor.fetchall()
 
             user_id = response[0][0]
         except sqlite3.Error as user_id_error:
             print(f"Error while getting userID: {user_id_error}")
 
-        db.claim_project(DB_NAME, CLAIM_TABLE, user_id, self.id)
+        db.claim_project(self.DB_NAME, self.CLAIM_TABLE, user_id, self.id)
         self.close()
 
     def initial_screen(self):
@@ -117,6 +116,7 @@ class claim_window(QW.QMainWindow):
         self.text_boxes.addWidget(self.dept)
 
         if user_data is not None:
+            print("there")
             self.first_name.setText(user_data[0])
             self.last_name.setText(user_data[1])
             self.title.setText(user_data[2])

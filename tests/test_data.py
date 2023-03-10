@@ -1,14 +1,20 @@
+import sqlite3
 import db_utils as db
 from gather_data import get_json_data, update_data
 from process_data import process
 from database_viewer_ui import database_viewer
+from claim_window_ui import claim_window
+# from update_or_show_ui import update_or_show
 import PySide6.QtWidgets as QtWidgets
+
+QtWidgets.QApplication([])
 
 DB_NAME = "data_testing.db"
 TABLE_NAMES = ("test_entry_table", "test_user_table", "test_claim_table")
 ENTRY_TABLE, USER_TABLE, CLAIM_TABLE = TABLE_NAMES
 IDS_TO_TEST = [5, 1, 3, 12, 1]
 JSON_TEST = get_json_data()
+USER_INFO = ("justin", "buiel", "student", "jbuiel@bridgew.edu", "comp sci")
 
 
 def test_api_data_amount():
@@ -66,8 +72,6 @@ def test_gui_info():
     tagged_entries = db.get_tagged_dict(db_cursor, ENTRY_TABLE)
     db.shutdown_database(db_connection)
 
-    QtWidgets.QApplication([])
-    update_data
     ui = database_viewer(DB_NAME, TABLE_NAMES)
 
     for id in IDS_TO_TEST:
@@ -109,3 +113,47 @@ def test_gui_info():
             assert response.isChecked() is True
         else:
             assert response.isChecked() is False
+
+
+def test_user_creation():
+    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAMES)
+    db.create_user(DB_NAME, USER_TABLE, USER_INFO)
+    db_cursor.execute(
+        f'''SELECT * FROM {USER_TABLE} WHERE email like \'{USER_INFO[3]}\' ''')
+    response = db_cursor.fetchall()
+    db.shutdown_database(db_connection)
+
+    assert response[0][1:] == USER_INFO
+
+
+def test_user_auto_fill():
+    db_connection = sqlite3.connect(DB_NAME)
+    db_cursor = db_connection.cursor()
+    db_cursor.execute(
+        f'''SELECT * FROM {USER_TABLE} WHERE email like \'{USER_INFO[3]}\' ''')
+    response = db_cursor.fetchall()
+    response = response[0][1:]
+    claiming_window = claim_window(1, DB_NAME, TABLE_NAMES)
+    claiming_window.email.setText(USER_INFO[3])
+    claiming_window.check_for_user()
+
+    assert claiming_window.first_name.text() == USER_INFO[0]
+    assert claiming_window.last_name.text() == USER_INFO[1]
+    assert claiming_window.title.text() == USER_INFO[2]
+    assert claiming_window.email.text() == USER_INFO[3]
+    assert claiming_window.dept.text() == USER_INFO[4]
+
+    claiming_window.claim_handler()
+
+
+def test_claim_process():
+    db_connection = sqlite3.connect(DB_NAME)
+    db_cursor = db_connection.cursor()
+    process(JSON_TEST, db_cursor, ENTRY_TABLE, False)
+    db.shutdown_database(db_connection)
+    
+    ui = database_viewer(DB_NAME, TABLE_NAMES)
+
+    # project is claimed and cannot be claimed by new person as indicated by text and disabled
+    assert ui.claim_button.isEnabled() is False
+    assert ui.claim_button.text() == "Project Claimed by Above Faculty Member"

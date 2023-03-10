@@ -18,12 +18,12 @@ URL = "https://justinb.wufoo.com/api/v3/forms/cubes-project-proposal-submission/
 TESTING = False
 
 
-def update_data() -> None:  # comment to test workflow
+def update_data(db_name, table_names) -> None:  # comment to test workflow
     """The main function calls other functions and passes their return values to the next step"""
     json_object: dict[str, list[dict[str, str]]] = get_json_data()
 
     db_connection, db_cursor = db.set_up_database(
-        DB_NAME, TABLE_NAMES)
+        db_name, table_names)
 
     process(json_object, db_cursor, ENTRY_TABLE, TESTING)
 

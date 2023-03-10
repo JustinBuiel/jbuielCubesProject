@@ -28,7 +28,7 @@ class update_or_show(QW.QMainWindow):
 
     @Slot()
     def update_click_handler(self):
-        update_data()
+        update_data(DB_NAME, TABLE_NAMES)
         self.data_viewer = database_viewer(DB_NAME, TABLE_NAMES)
         self.data_viewer.show()
         self.close()

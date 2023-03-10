@@ -11,9 +11,9 @@ class database_viewer(QW.QMainWindow):
         super().__init__()
         self.resize(1280, 720)
         self.DB_NAME = DB_NAME
-        self.ENTRY_TABLE = TABLE_NAMES[0]
-        self.USER_TABLE = TABLE_NAMES[1]
-        self.CLAIM_TABLE = TABLE_NAMES[2]
+        self.TABLE_NAMES = TABLE_NAMES
+        self.ENTRY_TABLE, self.USER_TABLE, self.CLAIM_TABLE = TABLE_NAMES
+
         self.id_number = 0
 
         try:
@@ -100,7 +100,8 @@ class database_viewer(QW.QMainWindow):
     @Slot()
     def claim_click_handler(self):
         # claim logic here
-        self.claim = claim_window(self.id_number)
+        self.claim = claim_window(
+            self.id_number, self.DB_NAME, self.TABLE_NAMES)
         self.claim.show()
 
     def check_project_claimed(self, project_id: int) -> bool:
