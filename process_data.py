@@ -7,10 +7,10 @@ import db_utils as db
 
 
 def process(json_object: dict[str, list[dict[str, str]]], db_cursor: sqlite3.Cursor,
-            TABLE_NAMES: tuple[str], testing: bool) -> None:
+            TABLE_NAME: str, testing: bool) -> None:
     """Loops through the entries returned by the API and gathers the data into a
     neat format for the database insertion"""
-    TABLE_NAME = TABLE_NAMES[0]
+
     list_of_entries = json_object['Entries']
     individual_entry_list = []
     testing_dict = {}

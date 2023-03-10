@@ -3,12 +3,13 @@ Holds all of the interactions with the database
 """
 
 import sqlite3
+import sys
 
 
 def set_up_database(db_name: str, TABLE_NAMES: tuple[str]) -> sqlite3.Connection | sqlite3.Cursor:
     """Sets up our database and then creates the table. The names for the databse and table(s) are accepted as parameters.
     The function returns the important connection and cursor objects and table_name for use throughout the program."""
-    ENTRY_TABLE, USER_TABLE, CLAIM_TABLE = TABLE_NAMES
+    (ENTRY_TABLE, USER_TABLE, CLAIM_TABLE) = TABLE_NAMES
     db_connection = None
     try:
         # initialize the database and its important connection/cursor objects
@@ -67,8 +68,8 @@ def _make_user_table(db_connection: sqlite3.Connection, db_cursor: sqlite3.Curso
                              firstName TEXT,
                              lastName TEXT,
                              title TEXT,
-                             email TEXT,
-                             dept TEXT''')
+                             email BLOB,
+                             dept TEXT);''')
         db_cursor.execute(f'''DELETE FROM {table_name}''')
         db_connection.commit()
     except sqlite3.Error as creation_error:
@@ -78,8 +79,9 @@ def _make_user_table(db_connection: sqlite3.Connection, db_cursor: sqlite3.Curso
 def _make_claim_table(db_connection: sqlite3.Connection, db_cursor: sqlite3.Cursor, table_name: str) -> None:
     try:
         db_cursor.execute(f'''CREATE TABLE IF NOT EXISTS {table_name}(
-                             userID INTEGER PRIMARY KEY,
-                             projectID INTEGER PRIMARY KEY''')
+                             userID INTEGER,
+                             projectID INTEGER,
+                             PRIMARY KEY (userID, projectID));''')
         db_cursor.execute(f'''DELETE FROM {table_name}''')
         db_connection.commit()
     except sqlite3.Error as creation_error:
@@ -122,6 +124,39 @@ def insert_data(individual_entry_list: tuple[str], db_cursor: sqlite3.Cursor, ta
         print(f'A database insert error has occurred: {insert_error}')
 
 
+def create_user(db_name: str, table_name: str, user_info: tuple[str, str, str, str, str]):
+    (first_name, last_name, title, email, dept) = user_info
+
+    try:
+        db_connection = sqlite3.connect(db_name)
+        db_cursor = db_connection.cursor()
+        db_cursor.execute(f'''INSERT INTO {table_name} (firstName, lastName, title, email, dept) \
+            VALUES (?, ?, ?, ?, ?)''',
+                          (first_name,
+                           last_name,
+                           title,
+                           email,
+                           dept))
+
+        db_connection.commit()
+        shutdown_database(db_connection)
+    except sqlite3.Error as user_creation_error:
+        print(f"Error while creating user: {user_creation_error}")
+
+
+def claim_project(db_name: str, table_name: str, user_id: int, project_id: int):
+    try:
+        db_connection = sqlite3.connect(db_name)
+        db_cursor = db_connection.cursor()
+        db_cursor.execute(f'''INSERT INTO {table_name} (userID, projectID) \
+            VALUES (?, ?)''',
+                          (user_id,
+                           project_id))
+        shutdown_database(db_connection)
+    except sqlite3.Error as user_creation_error:
+        print(f"Error while claiming project: {user_creation_error}")
+
+
 def shutdown_database(db_connection: sqlite3.Connection) -> None:
     """Populates the database tables and disconnects from the database"""
     try:
@@ -156,6 +191,8 @@ def get_tagged_dict(db_cursor: sqlite3.Cursor, table_name) -> dict[int, dict[str
     except sqlite3.Error as get_entries_error:
         print(
             f'A database access error has occurred while getting entry data for dictionary storage: {get_entries_error}')
+        print("Database empty, please update data first")
+        sys.exit(-1)
 
     for row in response:
         return_dict[int(row[0])] = _get_labelled_info(row[1:])
