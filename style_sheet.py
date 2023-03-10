@@ -1,9 +1,9 @@
 from PySide6.QtGui import QPalette, QColor, QFont
 import PySide6.QtWidgets as QW
 
-BLACK = QColor(30, 27, 24)
-WHITE = QColor(255, 255, 255)
-BLUE = QColor(20, 20, 125)
+BACKGROUND = QColor(30, 27, 24)
+TEXT = QColor(255, 255, 255)
+ACCENT = QColor(20, 20, 125)
 
 
 def set(app: QW.QApplication):
@@ -12,12 +12,12 @@ def set(app: QW.QApplication):
     font.setFamilies("Inter")
     font.setPointSize(11)
     app.setFont(font)
-    app_palette.setColor(QPalette.ColorRole.Window, BLACK)
-    app_palette.setColor(QPalette.ColorRole.Base, BLUE)
-    app_palette.setColor(QPalette.ColorRole.Button, BLUE)
-    app_palette.setColor(QPalette.ColorRole.WindowText, WHITE)
-    app_palette.setColor(QPalette.ColorRole.Text, WHITE)
-    app_palette.setColor(QPalette.ColorRole.ButtonText, WHITE)
+    app_palette.setColor(QPalette.ColorRole.Window, BACKGROUND)
+    app_palette.setColor(QPalette.ColorRole.Base, ACCENT)
+    app_palette.setColor(QPalette.ColorRole.Button, ACCENT)
+    app_palette.setColor(QPalette.ColorRole.WindowText, TEXT)
+    app_palette.setColor(QPalette.ColorRole.Text, TEXT)
+    app_palette.setColor(QPalette.ColorRole.ButtonText, TEXT)
 
     app.setPalette(app_palette)
     app.setStyle('Fusion')

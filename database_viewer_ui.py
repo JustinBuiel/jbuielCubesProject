@@ -5,10 +5,10 @@ import db_utils as db
 import time
 
 
-class database_viewer(QW.QWidget):
-    def __init__(self, main_window: QW.QMainWindow, db_name: str, table_name: str) -> None:
-        QW.QWidget.__init__(self)
-        main_window.resize(1280, 720)
+class database_viewer(QW.QMainWindow):
+    def __init__(self, db_name: str, table_name: str) -> None:
+        super().__init__()
+        self.resize(1280, 720)
 
         try:
             db_connection = sqlite3.connect(db_name)
@@ -61,8 +61,8 @@ class database_viewer(QW.QWidget):
         self.outer_widget.setLayout(self.outer_layout)
 
         # tell the app to use outer_widget as the main widget
-        main_window.setCentralWidget(self.outer_widget)
-        QMetaObject.connectSlotsByName(main_window)
+        self.setCentralWidget(self.outer_widget)
+        QMetaObject.connectSlotsByName(self)
 
     def _add_button(self, string: str) -> None:
         """Add buttons to the left layout list based on database entries"""

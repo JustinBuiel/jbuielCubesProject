@@ -6,9 +6,26 @@ import sys
 from secrets import wufoo_key  # type: ignore reportShadowedImport
 import requests
 from requests.auth import HTTPBasicAuth
+import db_utils as db
+from process_data import process
 
 WUFOO_KEY: str = wufoo_key
 URL = "https://justinb.wufoo.com/api/v3/forms/cubes-project-proposal-submission/entries/json"
+DB_NAME = "form_entries.db"
+TABLE_NAME = "entries"
+TESTING = False
+
+
+def update_data() -> None:  # comment to test workflow
+    """The main function calls other functions and passes their return values to the next step"""
+    json_object: dict[str, list[dict[str, str]]] = get_json_data()
+
+    db_connection, db_cursor = db.set_up_database(
+        DB_NAME, TABLE_NAME)
+
+    process(json_object, db_cursor, TABLE_NAME, TESTING)
+
+    db.shutdown_database(db_connection)
 
 
 def get_json_data() -> dict[str, list[dict[str, str]]]:
