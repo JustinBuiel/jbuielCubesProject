@@ -1,7 +1,6 @@
 import sqlite3
-# import time
 import PySide6.QtWidgets as QW
-from PySide6.QtCore import Slot, QMetaObject
+from PySide6.QtCore import QMetaObject, Slot
 import db_utils as db
 
 

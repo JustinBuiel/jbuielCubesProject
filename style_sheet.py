@@ -1,5 +1,5 @@
-from PySide6.QtGui import QPalette, QColor, QFont
 import PySide6.QtWidgets as QW
+from PySide6.QtGui import QColor, QFont, QPalette
 
 BACKGROUND = QColor(30, 27, 24)
 TEXT = QColor(255, 255, 255)

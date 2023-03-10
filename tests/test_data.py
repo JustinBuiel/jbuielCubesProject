@@ -1,11 +1,10 @@
 import sqlite3
-import db_utils as db
-from gather_data import get_json_data, update_data
-from process_data import process
-from database_viewer_ui import database_viewer
-from claim_window_ui import claim_window
-# from update_or_show_ui import update_or_show
 import PySide6.QtWidgets as QtWidgets
+import db_utils as db
+from claim_window_ui import claim_window
+from database_viewer_ui import database_viewer
+from gather_data import get_json_data
+from process_data import process
 
 QtWidgets.QApplication([])
 
@@ -151,7 +150,7 @@ def test_claim_process():
     db_cursor = db_connection.cursor()
     process(JSON_TEST, db_cursor, ENTRY_TABLE, False)
     db.shutdown_database(db_connection)
-    
+
     ui = database_viewer(DB_NAME, TABLE_NAMES)
 
     # project is claimed and cannot be claimed by new person as indicated by text and disabled

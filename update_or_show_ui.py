@@ -1,7 +1,7 @@
 import PySide6.QtWidgets as QW
-from PySide6.QtCore import Slot, QMetaObject
+from PySide6.QtCore import QMetaObject, Slot
 from database_viewer_ui import database_viewer
-from gather_data import update_data, DB_NAME, TABLE_NAMES
+from gather_data import DB_NAME, TABLE_NAMES, update_data
 
 ENTRY_TABLE, USER_TABLE, CLAIM_TABLE = TABLE_NAMES
 
