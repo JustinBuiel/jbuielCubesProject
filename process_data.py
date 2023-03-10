@@ -6,10 +6,11 @@ import sqlite3
 import db_utils as db
 
 
-def process(json_object: dict[str, list[dict[str, str]]], db_cursor: sqlite3.Cursor, table_name: str, testing: bool) -> None:
+def process(json_object: dict[str, list[dict[str, str]]], db_cursor: sqlite3.Cursor,
+            TABLE_NAMES: tuple[str], testing: bool) -> None:
     """Loops through the entries returned by the API and gathers the data into a
     neat format for the database insertion"""
-
+    TABLE_NAME = TABLE_NAMES[0]
     list_of_entries = json_object['Entries']
     individual_entry_list = []
     testing_dict = {}
@@ -53,7 +54,7 @@ def process(json_object: dict[str, list[dict[str, str]]], db_cursor: sqlite3.Cur
 
         individual_entry_list.append(entry['Field211'])
 
-        db.insert_data(individual_entry_list, db_cursor, table_name)
+        db.insert_data(tuple(individual_entry_list), db_cursor, TABLE_NAME)
 
         if testing:
             individual_entry_list.insert(0, testing_counter)

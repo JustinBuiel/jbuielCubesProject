@@ -1,13 +1,15 @@
 import PySide6.QtWidgets as QW
 from PySide6.QtCore import Slot
-from gather_data import update_data, DB_NAME, TABLE_NAME
 from database_viewer_ui import database_viewer
+from gather_data import update_data, DB_NAME, TABLE_NAMES
+
+ENTRY_TABLE, USER_TABLE, CLAIM_TABLE = TABLE_NAMES
 
 
 class update_or_show(QW.QMainWindow):
     def __init__(self):
         super().__init__()
-        self.data_viewer = database_viewer(DB_NAME, TABLE_NAME)
+        self.data_viewer = database_viewer(DB_NAME, TABLE_NAMES)
         self.resize(1280, 720)
 
         self.main = QW.QWidget()
@@ -31,6 +33,5 @@ class update_or_show(QW.QMainWindow):
 
     @Slot()
     def show_click_handler(self):
-        self.data_viewer = database_viewer(DB_NAME, TABLE_NAME)
         self.data_viewer.show()
         self.close()

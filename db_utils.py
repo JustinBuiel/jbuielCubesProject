@@ -5,9 +5,10 @@ Holds all of the interactions with the database
 import sqlite3
 
 
-def set_up_database(db_name: str, table_name: str) -> sqlite3.Connection | sqlite3.Cursor:
+def set_up_database(db_name: str, TABLE_NAMES: tuple[str]) -> sqlite3.Connection | sqlite3.Cursor:
     """Sets up our database and then creates the table. The names for the databse and table(s) are accepted as parameters.
     The function returns the important connection and cursor objects and table_name for use throughout the program."""
+    ENTRY_TABLE, USER_TABLE, CLAIM_TABLE = TABLE_NAMES
     db_connection = None
     try:
         # initialize the database and its important connection/cursor objects
@@ -16,7 +17,9 @@ def set_up_database(db_name: str, table_name: str) -> sqlite3.Connection | sqlit
         print('Successfully connected to database')
 
         # create the table(s)
-        _make_entry_table(db_connection, db_cursor, table_name)
+        _make_entry_table(db_connection, db_cursor, ENTRY_TABLE)
+        _make_user_table(db_connection, db_cursor, USER_TABLE)
+        _make_claim_table(db_connection, db_cursor, CLAIM_TABLE)
         print('Successfully created all tables')
     except sqlite3.Error as connection_error:
         print(f'A database error has occurred: {connection_error}')
@@ -57,11 +60,37 @@ def _make_entry_table(db_connection: sqlite3.Connection, db_cursor: sqlite3.Curs
         print(f'A database table creation error occurred: {creation_error}')
 
 
-def insert_data(individual_entry_list: list, db_cursor: sqlite3.Cursor, table_name: str) -> None:
+def _make_user_table(db_connection: sqlite3.Connection, db_cursor: sqlite3.Cursor, table_name: str) -> None:
+    try:
+        db_cursor.execute(f'''CREATE TABLE IF NOT EXISTS {table_name}(
+                             userID INTEGER PRIMARY KEY,
+                             firstName TEXT,
+                             lastName TEXT,
+                             title TEXT,
+                             email TEXT,
+                             dept TEXT''')
+        db_cursor.execute(f'''DELETE FROM {table_name}''')
+        db_connection.commit()
+    except sqlite3.Error as creation_error:
+        print(f'A database table creation error occurred: {creation_error}')
+
+
+def _make_claim_table(db_connection: sqlite3.Connection, db_cursor: sqlite3.Cursor, table_name: str) -> None:
+    try:
+        db_cursor.execute(f'''CREATE TABLE IF NOT EXISTS {table_name}(
+                             userID INTEGER PRIMARY KEY,
+                             projectID INTEGER PRIMARY KEY''')
+        db_cursor.execute(f'''DELETE FROM {table_name}''')
+        db_connection.commit()
+    except sqlite3.Error as creation_error:
+        print(f'A database table creation error occurred: {creation_error}')
+
+
+def insert_data(individual_entry_list: tuple[str], db_cursor: sqlite3.Cursor, table_name: str) -> None:
     """Inserts the entry data from the list into the appropriate table"""
-    prefix, firstName, lastName, title, orgName, email, orgWebsite, phoneNumber, courseProject, guestSpeaker, siteVisit, \
-        jobShadow, internships, careerPanel, networkingEvent, summer2022, fall2022, spring2023, summer2023, otherTime, \
-        namePermission = individual_entry_list
+    (prefix, firstName, lastName, title, orgName, email, orgWebsite, phoneNumber, courseProject, guestSpeaker, siteVisit,
+        jobShadow, internships, careerPanel, networkingEvent, summer2022, fall2022, spring2023, summer2023, otherTime,
+        namePermission) = individual_entry_list
     try:
         db_cursor.execute(f'''INSERT INTO {table_name} (prefix, firstName, lastName, title, orgName, email, orgWebsite, \
             phoneNumber, courseProject, guestSpeaker, siteVisit, jobShadow, internships, careerPanel, networkingEvent, \

@@ -1,22 +1,23 @@
 import sqlite3
+import time
 import PySide6.QtWidgets as QW
 from PySide6.QtCore import QMetaObject, Qt, Slot
 import db_utils as db
-import time
 
 
 class database_viewer(QW.QMainWindow):
-    def __init__(self, db_name: str, table_name: str) -> None:
+    def __init__(self, DB_NAME, TABLE_NAMES) -> None:
         super().__init__()
         self.resize(1280, 720)
+        ENTRY_TABLE = TABLE_NAMES[0]
 
         try:
-            db_connection = sqlite3.connect(db_name)
+            db_connection = sqlite3.connect(DB_NAME)
             db_cursor = db_connection.cursor()
             self.tagged_entries: dict[int, dict[str, str]
-                                      ] = db.get_tagged_dict(db_cursor, table_name)
+                                      ] = db.get_tagged_dict(db_cursor, ENTRY_TABLE)
             self.button_strings: list[str] = db.get_button_data(
-                db_cursor, table_name)
+                db_cursor, ENTRY_TABLE)
             db.shutdown_database(db_connection)
         except sqlite3.Error as db_connect_error:
             print(f'A gui database error has occurred: {db_connect_error}')
@@ -55,22 +56,18 @@ class database_viewer(QW.QMainWindow):
         self.right_widget.setEnabled(False)
         self.right_container.addWidget(self.right_widget)
 
+        self.claim_button = QW.QPushButton(text="Claim Project")
+        self.right_container.addWidget(self.claim_button)
+
         # finalize outer widget and layout
         self.outer_layout.addLayout(self.scroll_layout)
         self.outer_layout.addLayout(self.right_container)
         self.outer_widget.setLayout(self.outer_layout)
 
+        self.claim_button.clicked.connect(self.claim_click_handler)
         # tell the app to use outer_widget as the main widget
         self.setCentralWidget(self.outer_widget)
         QMetaObject.connectSlotsByName(self)
-
-    def _add_button(self, string: str) -> None:
-        """Add buttons to the left layout list based on database entries"""
-        # code help from https://stackoverflow.com/questions/60250842/how-to-create-dynamic-buttons-in-pyqt5 (buttons)
-        push_button = QW.QPushButton(string)
-        push_button.setObjectName(string)
-        self.left_layout.addWidget(push_button)
-        push_button.clicked.connect(self._click_handler)
 
     @Slot()
     def _click_handler(self) -> None:
@@ -90,12 +87,25 @@ class database_viewer(QW.QMainWindow):
 
         self.show_entry_data(id_number)
 
-    # clear layout so we aren't stacking on top of old data
+    @Slot()
+    def claim_click_handler(self):
+        # claim logic here
+        pass
+
+    def _add_button(self, string: str) -> None:
+        """Add buttons to the left layout list based on database entries"""
+        # code help from https://stackoverflow.com/questions/60250842/how-to-create-dynamic-buttons-in-pyqt5 (buttons)
+        push_button = QW.QPushButton(string)
+        push_button.setObjectName(string)
+        self.left_layout.addWidget(push_button)
+        push_button.clicked.connect(self._click_handler)
+
     def show_entry_data(self, id: int) -> None:
         """click handler calls this to populate the data fields in right_layout"""
         display__instance: dict[int, dict[str, str]] = {
             k: v for k, v in self.tagged_entries.items()}
 
+        # clear layout so we aren't stacking on top of old data
         while self.right_layout.count():
             child = self.right_layout.takeAt(0)
             if child.widget() is not None:

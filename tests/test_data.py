@@ -5,7 +5,8 @@ from database_viewer_ui import database_viewer
 import PySide6.QtWidgets as QtWidgets
 
 DB_NAME = "data_testing.db"
-TABLE_NAME = "test_table"
+TABLE_NAMES = ("test_entry_table", "test_user_table", "test_claim_table")
+ENTRY_TABLE, USER_TABLE, CLAIM_TABLE = TABLE_NAMES
 IDS_TO_TEST = [5, 1, 3, 12, 1]
 JSON_TEST = get_json_data()
 
@@ -18,10 +19,10 @@ def test_api_data_amount():
 
 def test_entry_in_database():
     # test 2 sprint 2
-    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAME)
+    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAMES)
     raw_entries: dict[str, str] = process(
-        JSON_TEST, db_cursor, TABLE_NAME, True)
-    response = db_cursor.execute(f'''SELECT * FROM {TABLE_NAME}''')
+        JSON_TEST, db_cursor, ENTRY_TABLE, True)
+    response = db_cursor.execute(f'''SELECT * FROM {ENTRY_TABLE}''')
     counter = 1
     for row in response:
         assert raw_entries[counter] == row
@@ -32,10 +33,10 @@ def test_entry_in_database():
 
 def test_data_in_table():
     # test 3 sprint 3
-    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAME)
-    raw_entries = process(JSON_TEST, db_cursor, TABLE_NAME, True)
+    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAMES)
+    raw_entries = process(JSON_TEST, db_cursor, ENTRY_TABLE, True)
 
-    db_cursor.execute(f'''SELECT * FROM {TABLE_NAME}''')
+    db_cursor.execute(f'''SELECT * FROM {ENTRY_TABLE}''')
     results = db_cursor.fetchall()
     if len(results) > 0:
         assert True
@@ -45,9 +46,9 @@ def test_data_in_table():
 
     db.shutdown_database(db_connection)
 
-    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAME)
+    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAMES)
 
-    db_cursor.execute(f'''SELECT * FROM {TABLE_NAME}''')
+    db_cursor.execute(f'''SELECT * FROM {ENTRY_TABLE}''')
     results = db_cursor.fetchall()
     # no data inserted so there shouldn't be any responses
     if len(results) == 0:
@@ -60,14 +61,14 @@ def test_data_in_table():
 
 def test_gui_info():
     # test 4 sprint 3
-    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAME)
-    process(JSON_TEST, db_cursor, TABLE_NAME, False)
-    tagged_entries = db.get_tagged_dict(db_cursor, TABLE_NAME)
+    db_connection, db_cursor = db.set_up_database(DB_NAME, TABLE_NAMES)
+    process(JSON_TEST, db_cursor, ENTRY_TABLE, False)
+    tagged_entries = db.get_tagged_dict(db_cursor, ENTRY_TABLE)
     db.shutdown_database(db_connection)
 
     QtWidgets.QApplication([])
     main_window = QtWidgets.QMainWindow()
-    ui = database_viewer(main_window, DB_NAME, TABLE_NAME)
+    ui = database_viewer(main_window, DB_NAME, ENTRY_TABLE)
 
     for id in IDS_TO_TEST:
         ui.show_entry_data(id)

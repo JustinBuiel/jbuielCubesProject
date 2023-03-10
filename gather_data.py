@@ -9,10 +9,12 @@ from requests.auth import HTTPBasicAuth
 import db_utils as db
 from process_data import process
 
+TABLE_NAMES = ("entries", "user_information", "claimed_projects")
+DB_NAME = "form_entries.db"
+ENTRY_TABLE, USER_TABLE, CLAIM_TABLE = TABLE_NAMES
+
 WUFOO_KEY: str = wufoo_key
 URL = "https://justinb.wufoo.com/api/v3/forms/cubes-project-proposal-submission/entries/json"
-DB_NAME = "form_entries.db"
-TABLE_NAME = "entries"
 TESTING = False
 
 
@@ -21,9 +23,9 @@ def update_data() -> None:  # comment to test workflow
     json_object: dict[str, list[dict[str, str]]] = get_json_data()
 
     db_connection, db_cursor = db.set_up_database(
-        DB_NAME, TABLE_NAME)
+        DB_NAME, TABLE_NAMES)
 
-    process(json_object, db_cursor, TABLE_NAME, TESTING)
+    process(json_object, db_cursor, ENTRY_TABLE, TESTING)
 
     db.shutdown_database(db_connection)
 
