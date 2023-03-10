@@ -67,8 +67,7 @@ def test_gui_info():
     db.shutdown_database(db_connection)
 
     QtWidgets.QApplication([])
-    main_window = QtWidgets.QMainWindow()
-    ui = database_viewer(main_window, DB_NAME, ENTRY_TABLE)
+    ui = database_viewer(DB_NAME, ENTRY_TABLE)
 
     for id in IDS_TO_TEST:
         ui.show_entry_data(id)
